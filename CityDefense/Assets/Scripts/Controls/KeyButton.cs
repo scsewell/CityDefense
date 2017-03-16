@@ -2,7 +2,7 @@
 
 namespace InputController
 {
-    class KeyButton : ISource<bool>
+    public struct KeyButton : ISource<bool>
     {
         private KeyCode m_button;
 

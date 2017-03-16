@@ -1,6 +1,6 @@
 ﻿namespace InputController
 {
-    public class SourceInfo
+    public struct SourceInfo
     {
         private SourceType m_type;
         public SourceType Type

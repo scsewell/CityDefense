@@ -9,8 +9,16 @@ namespace InputController
      */
     public class BufferedSource<T>
     {
-        protected List<ISource<T>> m_sources;
-        private List<List<Dictionary<ISource<T>, T>>> m_buffers;
+        protected List<ISource<T>> m_sources = new List<ISource<T>>();
+        private List<List<Dictionary<ISource<T>, T>>> m_buffers = new List<List<Dictionary<ISource<T>, T>>>();
+
+        private Dictionary<ISource<T, List<List<T>>> m_buffer = new Dictionary<ISource<T, List<List<T>>>();
+
+        private List<SourceInfo> m_sourceInfos = new List<SourceInfo>();
+        public List<SourceInfo> SourceInfos
+        {
+            get { return m_sourceInfos; }
+        }
 
         protected bool m_canBeMuted;
         public bool CanBeMuted
@@ -25,10 +33,6 @@ namespace InputController
             {
                 m_sources = new List<ISource<T>>(sources);
             }
-            else
-            {
-                m_sources = new List<ISource<T>>();
-            }
             ResetBuffers();
         }
 
@@ -39,12 +43,15 @@ namespace InputController
         {
             m_sources = m_sources.OrderBy(s => (int)s.GetSourceType()).ToList();
 
-            m_buffers = new List<List<Dictionary<ISource<T>, T>>>();
+            m_sourceInfos.Clear();
+            m_buffers.Clear();
+
             m_buffers.Add(new List<Dictionary<ISource<T>, T>>());
             m_buffers.Last().Add(new Dictionary<ISource<T>, T>());
             foreach (ISource<T> source in m_sources)
             {
                 m_buffers.Last().Last().Add(source, source.GetValue());
+                m_sourceInfos.Add(new SourceInfo(source.GetSourceType(), source.GetName()));
             }
             m_buffers.Add(new List<Dictionary<ISource<T>, T>>());
         }
@@ -89,19 +96,6 @@ namespace InputController
                 buffer.Add(m_buffers.GetRange(0, m_buffers.Count - 1).Last(fixedUpdate => fixedUpdate.Any()).Last());
             }
             return buffer.Concat(m_buffers.Last()).ToList();
-        }
-
-        /*
-         * Gets information about the sources for this buffer.
-         */
-        public List<SourceInfo> GetSourceInfos()
-        {
-            List<SourceInfo> sourceInfo = new List<SourceInfo>();
-            foreach (ISource<T> source in m_sources)
-            {
-                sourceInfo.Add(new SourceInfo(source.GetSourceType(), source.GetName()));
-            }
-            return sourceInfo;
         }
 
         /*
