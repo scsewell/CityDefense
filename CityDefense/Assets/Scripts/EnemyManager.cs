@@ -8,7 +8,7 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private float m_rocketStartWait = 5.0f;
     [SerializeField] private float m_rocketRate = 8.0f;
     [SerializeField] private float m_rocketCooldown = 4.0f;
-    [Range(0, 0.01f)]
+    [Range(0, 0.1f)]
     [SerializeField] private float m_rocketExponent = 0.001f;
     [Range(0, 10)]
     [SerializeField] private float m_rocketSpawnWidth = 6.0f;
@@ -18,10 +18,13 @@ public class EnemyManager : MonoBehaviour
     
     private float m_roundTime = 0;
 
-    private void Start()
+    private void Update()
     {
-		
-	}
+        if (Time.frameCount % 10 == 0)
+        {
+            System.GC.Collect();
+        }
+    }
 
     private void FixedUpdate()
     {

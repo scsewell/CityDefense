@@ -32,8 +32,7 @@ public class Healthbar : MonoBehaviour
     private Dictionary<Image, float> m_damageBars;
     private Vector3 m_offset;
     private float m_hurtFac = 0;
-
-
+    
     public void Init(Health health, Vector3 offset)
     {
         m_canvas = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
@@ -86,19 +85,18 @@ public class Healthbar : MonoBehaviour
         }
 
         m_hurtFac = Mathf.Lerp(m_hurtFac, 0, m_hurtFadeSpeed * Time.deltaTime);
-
-        List<Image> damageBars = new List<Image>(m_damageBars.Keys);
-        foreach (Image damageBar in damageBars)
+        
+        foreach (KeyValuePair<Image, float> damageBar in m_damageBars)
         {
-            float alpha = 0.25f - (0.25f * (Time.time - (m_damageBars[damageBar] + m_damageWaitTime)) / m_damageFadeTime);
+            float alpha = 0.25f - (0.25f * (Time.time - (damageBar.Value + m_damageWaitTime)) / m_damageFadeTime);
             if (alpha > 0)
             {
-                SetAlpha(damageBar, alpha);
+                SetAlpha(damageBar.Key, alpha);
             }
             else
             {
-                m_damageBars.Remove(damageBar);
-                Destroy(damageBar.gameObject);
+                m_damageBars.Remove(damageBar.Key);
+                Destroy(damageBar.Key.gameObject);
             }
         }
     }

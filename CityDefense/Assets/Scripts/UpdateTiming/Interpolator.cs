@@ -2,7 +2,7 @@
 {
     private IInterpolated<T> m_interpolated;
 
-    private T[] m_latestValues;
+    private T[] m_latestValues = new T[2];
     private int m_newestValueIndex;
 
     private bool m_firstFixedLoop = true;
@@ -24,8 +24,6 @@
 
     public void Start()
     {
-        m_latestValues = new T[2];
-
         ForgetPreviousValues();
     }
 

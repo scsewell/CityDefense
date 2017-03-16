@@ -35,9 +35,7 @@ public class Rocket : Enemy
 
     private void FixedUpdate()
     {
-        Vector3 targetPos = m_target != null ? m_target.position : m_targetPos;
-        Vector3 disp = targetPos - transform.position;
-        m_rotation = Mathf.MoveTowards(m_rotation, getTargetRot(), Time.deltaTime * m_turnSpeed);
+        m_rotation = Mathf.Lerp(m_rotation, getTargetRot(), Time.deltaTime * m_turnSpeed);
 
         transform.rotation = Quaternion.AngleAxis(m_rotation, Vector3.forward);
         transform.position += -transform.up * m_speed * Time.deltaTime;

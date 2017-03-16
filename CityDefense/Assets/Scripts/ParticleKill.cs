@@ -2,9 +2,16 @@
 
 public class ParticleKill : MonoBehaviour
 {
+    private ParticleSystem m_particles;
+
+    private void Awake()
+    {
+        m_particles = GetComponentInChildren<ParticleSystem>();
+    }
+
     private void Update()
     {
-        if (!GetComponentInChildren<ParticleSystem>().IsAlive())
+        if (!m_particles.IsAlive())
         {
             Destroy(gameObject);
         }

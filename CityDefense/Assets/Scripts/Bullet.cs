@@ -7,24 +7,30 @@ public class Bullet : Projectile
     [SerializeField]
     private float m_lifespan = 10.0f;
 
+    private TransformInterpolator m_interpolator;
+    private TrailRenderer m_trail;
     private Player m_player;
     private float m_creationTime;
 
-	private void Start()
+    private void Awake()
     {
-        m_creationTime = Time.time;
-	}
+        m_interpolator = GetComponent<TransformInterpolator>();
+        m_trail = GetComponent<TrailRenderer>();
+    }
 
-    private void Init(Player player)
+    protected override void OnInit(Player owner)
     {
-        m_player = player;
+        m_interpolator.ForgetPreviousValues();
+        m_trail.Clear();
+        m_creationTime = Time.time;
+        m_player = owner;
     }
 
     private void FixedUpdate()
     {
         if (Time.time - m_creationTime > m_lifespan)
         {
-            Destroy(gameObject);
+            Destroy();
         }
         transform.position += transform.forward * m_speed * Time.deltaTime;
     }
