@@ -21,6 +21,8 @@ public class Turret : MonoBehaviour
 
     [SerializeField]
     private Bullet m_bulletPrefab;
+    [SerializeField]
+    private ParticleSystem m_smokePrefab;
 
     private Player m_player;
     private Light m_light;
@@ -57,6 +59,8 @@ public class Turret : MonoBehaviour
             Vector3 pos = Vector3.ProjectOnPlane(m_barrelEnd.position, Vector3.forward);
             Vector3 disp = targetPos - pos;
             Bullet bullet = Instantiate(m_bulletPrefab, pos, Quaternion.LookRotation(disp, Vector3.up));
+
+            Instantiate(m_smokePrefab, pos, Quaternion.identity);
 
             m_brightness.ForgetPreviousValues();
             m_light.intensity = m_flashBrighness;
