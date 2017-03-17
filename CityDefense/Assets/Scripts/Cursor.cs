@@ -23,8 +23,8 @@ public class Cursor : MonoBehaviour
 
     public void Move()
     {
-        Vector2 input = new Vector2(Controls.Instance.AverageValue(GameAxis.TrackX), Controls.Instance.AverageValue(GameAxis.TrackY));
-        Vector2 delta = Vector2.ClampMagnitude(input * input.magnitude * input.magnitude, 1) * (speed * m_canvas.sizeDelta.y) * Time.deltaTime;
+        Vector2 input = Vector2.ClampMagnitude(new Vector2(Controls.Instance.AverageValue(GameAxis.TrackX), Controls.Instance.AverageValue(GameAxis.TrackY)), 1);
+        Vector2 delta = (input * input.magnitude * input.magnitude) * (speed * m_canvas.sizeDelta.y) * Time.deltaTime;
 
         float sideMargin    = (m_canvas.sizeDelta.x / 2) - m_edgeMargin;
         float topMargin     = (m_canvas.sizeDelta.y / 2) - m_edgeMargin;

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ControlsEarlyUpdate : MonoBehaviour
+public class ControlsEarlyUpdate : Singleton
 {
     ControlsUpdate m_controls;
 

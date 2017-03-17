@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class TransformInterpolator : MonoBehaviour
+public class TransformInterpolator : MonoBehaviour, InterpolationComponent
 {
     [SerializeField] public bool useThresholds = false;
     [SerializeField] private float m_postionThreshold = 0.001f;
@@ -16,9 +16,14 @@ public class TransformInterpolator : MonoBehaviour
         m_interpolator = new Interpolator<TransformData>(m_interpolated, useThresholds);
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        m_interpolator.Start();
+        InterpolationController.AddComponent(this);
+    }
+
+    private void OnDisable()
+    {
+        InterpolationController.RemoveComponent(this);
     }
 
     public void SetThresholds(bool useThresholds, float positionThreshold, float rotationThreshold, float scaleThreshold)
@@ -32,20 +37,26 @@ public class TransformInterpolator : MonoBehaviour
         m_scaleThreshold = scaleThreshold;
     }
 
-    private void FixedUpdate()
-    {
-        m_interpolator.UseThreshold = useThresholds;
-        m_interpolated.SetThresholds(m_postionThreshold, m_rotationThreshold, m_scaleThreshold);
-        m_interpolator.FixedUpdate();
-    }
-
     public void ForgetPreviousValues()
     {
         m_interpolator.ForgetPreviousValues();
     }
 
-    private void Update()
+    public void FixedFrame()
     {
-        m_interpolator.Update();
+        if (enabled)
+        {
+            m_interpolator.UseThreshold = useThresholds;
+            m_interpolated.SetThresholds(m_postionThreshold, m_rotationThreshold, m_scaleThreshold);
+            m_interpolator.FixedUpdate();
+        }
+    }
+
+    public void UpdateFrame(float factor)
+    {
+        if (enabled)
+        {
+            m_interpolator.Update(factor);
+        }
     }
 }

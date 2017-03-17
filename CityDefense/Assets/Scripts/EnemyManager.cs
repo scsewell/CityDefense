@@ -17,15 +17,7 @@ public class EnemyManager : MonoBehaviour
     private float m_rocketLastTime;
     
     private float m_roundTime = 0;
-
-    private void Update()
-    {
-        if (Time.frameCount % 10 == 0)
-        {
-            System.GC.Collect();
-        }
-    }
-
+    
     private void FixedUpdate()
     {
         m_roundTime += Time.deltaTime;

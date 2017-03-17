@@ -21,11 +21,13 @@ public class Player
     public void Update()
     {
         m_cursor.Move();
+        
+        bool fire = Controls.Instance.IsDown(GameButton.Fire1);
         foreach (Turret t in m_turrets)
         {
             Vector3 targetPos = m_cursor.GetTargetPos();
             t.StateUpdate(targetPos);
-            if (Controls.Instance.IsDown(GameButton.Fire1))
+            if (fire)
             {
                 t.FireBullet(targetPos);
             }

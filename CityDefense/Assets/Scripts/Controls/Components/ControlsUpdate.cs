@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(ControlsEarlyUpdate))]
-public class ControlsUpdate : MonoBehaviour
+public class ControlsUpdate : Singleton
 {
     private void Awake()
     {

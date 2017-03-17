@@ -33,14 +33,17 @@ public class Rocket : Enemy
         m_mesh.localEulerAngles = new Vector3(m_mesh.localEulerAngles.x, Random.Range(0f, 360f), m_mesh.localEulerAngles.z);
     }
 
+    private void Update()
+    {
+        m_mesh.localEulerAngles = m_mesh.localEulerAngles + Vector3.up * m_rollSpeed * Time.deltaTime;
+    }
+
     private void FixedUpdate()
     {
         m_rotation = Mathf.Lerp(m_rotation, getTargetRot(), Time.deltaTime * m_turnSpeed);
 
         transform.rotation = Quaternion.AngleAxis(m_rotation, Vector3.forward);
         transform.position += -transform.up * m_speed * Time.deltaTime;
-
-        m_mesh.localEulerAngles = m_mesh.localEulerAngles + Vector3.up * m_rollSpeed * Time.deltaTime;
     }
 
     private float getTargetRot()
@@ -50,7 +53,7 @@ public class Rocket : Enemy
         return ((360 - (Mathf.Atan2(disp.x, disp.y) * Mathf.Rad2Deg)) % 360) - 180;
     }
 
-    void OnApplicationQuit()
+    private void OnApplicationQuit()
     {
         m_quitting = true;
     }

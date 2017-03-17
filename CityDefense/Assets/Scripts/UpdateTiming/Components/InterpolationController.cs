@@ -1,41 +1,47 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class InterpolationController : MonoBehaviour
+public class InterpolationController : Singleton
 {
-    private static List<float> m_lastGameplayTimes;
+    private static List<InterpolationComponent> m_components;
     
-    private static float m_interpolationFactor;
-    public static float InterpolationFactor
+    private float m_lastFixedTime;
+
+    private void Awake()
     {
-        get { return m_interpolationFactor; }
+        m_components = new List<InterpolationComponent>();
     }
 
-    private void Start()
+    private void FixedUpdate()
     {
-        m_lastGameplayTimes = new List<float>();
-        m_lastGameplayTimes.Add(Time.time);
-        m_lastGameplayTimes.Add(Time.time);
-    }
+        Time.fixedDeltaTime = 0.5f;
 
-    public void FixedUpdate()
-    {
-        m_lastGameplayTimes.RemoveAt(0);
-        m_lastGameplayTimes.Add(Time.time);
-    }
-
-    public void Update()
-    {
-        float mostRecentTime = m_lastGameplayTimes[m_lastGameplayTimes.Count - 1];
-        float nextRecentTime = m_lastGameplayTimes[m_lastGameplayTimes.Count - 2];
-
-        if (mostRecentTime != nextRecentTime)
+        m_lastFixedTime = Time.time;
+        foreach (InterpolationComponent component in m_components)
         {
-            m_interpolationFactor = (Time.time - mostRecentTime) / (mostRecentTime - nextRecentTime);
+            component.FixedFrame();
         }
-        else
+    }
+
+    private void Update()
+    {
+        float factor = (Time.time - m_lastFixedTime) / Time.fixedDeltaTime;
+        foreach (InterpolationComponent component in m_components)
         {
-            m_interpolationFactor = 1;
+            component.UpdateFrame(factor);
         }
+    }
+
+    public static void AddComponent(InterpolationComponent component)
+    {
+        if (!m_components.Contains(component))
+        {
+            m_components.Add(component);
+        }
+    }
+
+    public static void RemoveComponent(InterpolationComponent component)
+    {
+        m_components.Remove(component);
     }
 }

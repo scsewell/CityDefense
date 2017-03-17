@@ -30,6 +30,7 @@ public class Healthbar : MonoBehaviour
     private RectTransform m_canvas;
     private RectTransform m_rt;
     private Dictionary<Image, float> m_damageBars;
+    private List<Image> m_toRemove;
     private Vector3 m_offset;
     private float m_hurtFac = 0;
     
@@ -44,6 +45,7 @@ public class Healthbar : MonoBehaviour
         m_offset = offset;
 
         m_damageBars = new Dictionary<Image, float>();
+        m_toRemove = new List<Image>();
         foreach (Transform child in m_damageBarParent)
         {
             Destroy(child.gameObject);
@@ -85,7 +87,8 @@ public class Healthbar : MonoBehaviour
         }
 
         m_hurtFac = Mathf.Lerp(m_hurtFac, 0, m_hurtFadeSpeed * Time.deltaTime);
-        
+
+        m_toRemove.Clear();
         foreach (KeyValuePair<Image, float> damageBar in m_damageBars)
         {
             float alpha = 0.25f - (0.25f * (Time.time - (damageBar.Value + m_damageWaitTime)) / m_damageFadeTime);
@@ -95,9 +98,14 @@ public class Healthbar : MonoBehaviour
             }
             else
             {
-                m_damageBars.Remove(damageBar.Key);
-                Destroy(damageBar.Key.gameObject);
+                m_toRemove.Add(damageBar.Key);
             }
+        }
+
+        foreach (Image toRemove in m_toRemove)
+        {
+            m_damageBars.Remove(toRemove);
+            Destroy(toRemove.gameObject);
         }
     }
 

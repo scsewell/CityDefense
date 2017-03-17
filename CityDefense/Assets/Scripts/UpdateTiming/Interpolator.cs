@@ -20,11 +20,14 @@
     {
         m_interpolated = interpolated;
         m_useThreshold = useThreshold;
+        ForgetPreviousValues();
     }
 
-    public void Start()
+    public void ForgetPreviousValues()
     {
-        ForgetPreviousValues();
+        T t = m_interpolated.ReadOriginal();
+        m_latestValues[0] = t;
+        m_latestValues[1] = t;
     }
 
     public void FixedUpdate()
@@ -49,20 +52,7 @@
         m_firstUpdateLoop = true;
     }
 
-    public void StoreCurrentValue()
-    {
-        m_newestValueIndex = GetOlderValueIndex();
-        m_latestValues[m_newestValueIndex] = m_interpolated.ReadOriginal();
-    }
-
-    public void ForgetPreviousValues()
-    {
-        T t = m_interpolated.ReadOriginal();
-        m_latestValues[0] = t;
-        m_latestValues[1] = t;
-    }
-
-    public void Update()
+    public void Update(float factor)
     {
         if (m_firstUpdateLoop)
         {
@@ -74,10 +64,16 @@
         {
             T newer = m_latestValues[m_newestValueIndex];
             T older = m_latestValues[GetOlderValueIndex()];
-            m_interpolated.AffectOriginal(m_interpolated.GetInterpolatedValue(older, newer, InterpolationController.InterpolationFactor));
+            m_interpolated.AffectOriginal(m_interpolated.GetInterpolatedValue(older, newer, factor));
         }
 
         m_firstFixedLoop = true;
+    }
+
+    public void StoreCurrentValue()
+    {
+        m_newestValueIndex = GetOlderValueIndex();
+        m_latestValues[m_newestValueIndex] = m_interpolated.ReadOriginal();
     }
 
     private int GetOlderValueIndex()

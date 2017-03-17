@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class FloatInterpolator : MonoBehaviour
+public class FloatInterpolator : MonoBehaviour, InterpolationComponent
 {
     private Interpolator<float> m_interpolator;
     private InterpolatedFloat m_interpolated;
@@ -12,6 +12,16 @@ public class FloatInterpolator : MonoBehaviour
         m_interpolated = interpolated;
         m_initialized = true;
         return m_interpolator;
+    }
+
+    private void OnEnable()
+    {
+        InterpolationController.AddComponent(this);
+    }
+
+    private void OnDisable()
+    {
+        InterpolationController.RemoveComponent(this);
     }
 
     public void SetThreshold(float threshold)
@@ -29,16 +39,21 @@ public class FloatInterpolator : MonoBehaviour
         {
             Debug.LogError("float interpolator was not initialized on " + transform.name);
         }
-        m_interpolator.Start();
+    }
+    
+    public void FixedFrame()
+    {
+        if (enabled)
+        {
+            m_interpolator.FixedUpdate();
+        }
     }
 
-    private void FixedUpdate()
+    public void UpdateFrame(float factor)
     {
-        m_interpolator.FixedUpdate();
-    }
-
-    private void Update()
-    {
-        m_interpolator.Update();
+        if (enabled)
+        {
+            m_interpolator.Update(factor);
+        }
     }
 }

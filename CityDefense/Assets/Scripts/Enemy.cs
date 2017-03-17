@@ -34,7 +34,7 @@ public class Enemy : MonoBehaviour
             health.ApplyDamage(m_damage);
             Destroy(gameObject);
         }
-        else
+        else if (other.gameObject.layer == LayerMask.NameToLayer("Projectiles"))
         {
             Projectile projectile = other.gameObject.GetComponent<Projectile>();
             m_health.ApplyDamage(projectile.GetDamage());
