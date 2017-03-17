@@ -14,7 +14,9 @@ public class InterpolationController : Singleton
 
     private void FixedUpdate()
     {
-        Time.fixedDeltaTime = 0.5f;
+        Time.fixedDeltaTime = 1.0f / 50;
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 10;
 
         m_lastFixedTime = Time.time;
         foreach (InterpolationComponent component in m_components)

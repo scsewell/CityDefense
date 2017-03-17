@@ -196,7 +196,8 @@ public class Controls
     public bool IsDown(GameButton button)
     {
         BufferedButton bufferedButton = m_buttons[button];
-        return !(m_isMuted && bufferedButton.CanBeMuted) && bufferedButton.IsDown();
+        bool isFixed = (Time.deltaTime == Time.fixedDeltaTime);
+        return !(m_isMuted && bufferedButton.CanBeMuted) && (isFixed ? bufferedButton.IsDown() : bufferedButton.VisualIsDown());
     }
 
     /*

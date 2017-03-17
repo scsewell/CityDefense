@@ -104,7 +104,7 @@ namespace InputController
             foreach (KeyValuePair<ISource<T>, List<T>> source in m_relevantBuffer)
             {
                 source.Value.Clear();
-                if ((includePrevious || m_buffer[source.Key][1].Count == 0) && m_buffer[source.Key][0].Count > 0)
+                if ((includePrevious && m_buffer[source.Key][0].Count > 0))
                 {
                     source.Value.Add(m_buffer[source.Key][0].Last());
                 }
