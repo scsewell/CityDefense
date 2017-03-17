@@ -64,13 +64,13 @@ public class Controls
      */
     public void FixedUpdate()
     {
-        foreach (BufferedButton button in m_buttons.Values)
+        foreach (KeyValuePair<GameButton, BufferedButton> button in m_buttons)
         {
-            button.RecordFixedUpdateState();
+            button.Value.RecordFixedUpdateState();
         }
-        foreach (BufferedAxis axis in m_axes.Values)
+        foreach (KeyValuePair<GameAxis, BufferedAxis> axis in m_axes)
         {
-            axis.RecordFixedUpdateState();
+            axis.Value.RecordFixedUpdateState();
         }
     }
 
@@ -79,13 +79,13 @@ public class Controls
      */
     public void EarlyUpdate()
     {
-        foreach (BufferedButton button in m_buttons.Values)
+        foreach (KeyValuePair<GameButton, BufferedButton> button in m_buttons)
         {
-            button.RecordUpdateState();
+            button.Value.RecordUpdateState();
         }
-        foreach (BufferedAxis axis in m_axes.Values)
+        foreach (KeyValuePair<GameAxis, BufferedAxis> axis in m_axes)
         {
-            axis.RecordUpdateState();
+            axis.Value.RecordUpdateState();
         }
     }
 
@@ -185,7 +185,7 @@ public class Controls
         }));
         m_axes.Add(GameAxis.TrackY, new BufferedAxis(true, 1f, new List<ISource<float>>
         {
-            new KeyAxis(KeyCode.W, KeyCode.S),
+            new KeyAxis(KeyCode.S, KeyCode.W),
             new JoystickAxis(GamepadAxis.LStickY),
         }));
     }
@@ -225,7 +225,7 @@ public class Controls
     public float AverageValue(GameAxis axis)
     {
         BufferedAxis bufferedAxis = m_axes[axis];
-        return (m_isMuted && bufferedAxis.CanBeMuted) ? 0 : bufferedAxis.AverageValue();
+        return (m_isMuted && bufferedAxis.CanBeMuted) ? 0 : bufferedAxis.GetValue(true);
     }
 
     /*
@@ -234,7 +234,7 @@ public class Controls
     public float CumulativeValue(GameAxis axis)
     {
         BufferedAxis bufferedAxis = m_axes[axis];
-        return (m_isMuted && bufferedAxis.CanBeMuted) ? 0 : bufferedAxis.CumulativeValue();
+        return (m_isMuted && bufferedAxis.CanBeMuted) ? 0 : bufferedAxis.GetValue(false);
     }
 
     

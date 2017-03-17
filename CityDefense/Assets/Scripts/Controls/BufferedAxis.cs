@@ -17,27 +17,36 @@ namespace InputController
         }
 
         /*
-         * Returns the average value of the axes over the last gamplay update frame, or the last visual update.
+         * Returns the value of the axes over the last gamplay update frame, or the last visual update.
          */
-        public float AverageValue()
+        public float GetValue(bool average)
         {
-            return GetRelevantInput(false).Average(sourceInputs => sourceInputs.ToList().Sum(input => GetInputValue(input)));
-        }
-
-        /*
-         * Returns the cumulative value of the axes over the last gamplay update frame, or the last visual update.
-         */
-        public float CumulativeValue()
-        {
-            return GetRelevantInput(false).Sum(sourceInputs => sourceInputs.ToList().Sum(input => GetInputValue(input)));
+            float maxValue = 0;
+            foreach (KeyValuePair<ISource<float>, List<float>> source in GetRelevantInput(false))
+            {
+                float value = 0;
+                foreach (float axisValue in source.Value)
+                {
+                    value += GetInputValue(source.Key, axisValue);
+                }
+                if (average && source.Value.Count > 0)
+                {
+                    value /= source.Value.Count;
+                }
+                if (Mathf.Abs(maxValue) < Mathf.Abs(value))
+                {
+                    maxValue = value;
+                }
+            }
+            return maxValue;
         }
 
         /*
          * Applies modifications to the input values based on the type of source as required.
          */
-        private float GetInputValue(KeyValuePair<ISource<float>, float> input)
+        private float GetInputValue(ISource<float> source, float value)
         {
-            return (input.Key.GetSourceType() == SourceType.Joystick) ? Mathf.Sign(input.Value) * Mathf.Pow(Mathf.Abs(input.Value), m_exponent) : input.Value;
+            return (source.GetSourceType() == SourceType.Joystick) ? Mathf.Sign(value) * Mathf.Pow(Mathf.Abs(value), m_exponent) : value;
         }
     }
 }

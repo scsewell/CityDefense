@@ -4,18 +4,28 @@ using System.Linq;
 namespace InputController
 {
     /*
-     * Stores all the keyboard and joystick keys that are relevant to a specific in game command.
+     * Stores all the keyboard and joystick button inputs that are relevant to a specific in game command.
      */
     public class BufferedButton : BufferedSource<bool>
     {
         public BufferedButton(bool canBeMuted, List<ISource<bool>> sources) : base(canBeMuted, sources) {}
 
         /*
-         * Returns true if any of the relevant keyboard or joystick keys are down this frame.
+         * Returns true if any relevant keys are down this frame.
          */
         public bool IsDown()
         {
-            return m_sources.Any(source => source.GetValue());
+            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
+            {
+                for (int i = source.Value.Count - 1; i > 0; i--)
+                {
+                    if (source.Value[i])
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         /*
@@ -23,13 +33,14 @@ namespace InputController
          */
         public bool JustDown()
         {
-            List<Dictionary<ISource<bool>, bool>> buffer = GetRelevantInput(true);
-
-            for (int i = buffer.Count - 1; i > 0; i--)
+            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
             {
-                if (buffer[i].Values.Any(boolie => boolie) && !buffer[i - 1].Values.Any(boolie => boolie))
+                for (int i = source.Value.Count - 1; i > 0; i--)
                 {
-                    return true;
+                    if (source.Value[i] && !source.Value[i - 1])
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -40,13 +51,14 @@ namespace InputController
          */
         public bool JustUp()
         {
-            List<Dictionary<ISource<bool>, bool>> buffer = GetRelevantInput(true);
-
-            for (int i = buffer.Count - 1; i > 0; i--)
+            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
             {
-                if (!buffer[i].Values.Any(boolie => boolie) && buffer[i - 1].Values.Any(boolie => boolie))
+                for (int i = source.Value.Count - 1; i > 0; i--)
                 {
-                    return true;
+                    if (!source.Value[i] && source.Value[i - 1])
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -57,11 +69,12 @@ namespace InputController
          */
         public bool VisualJustDown()
         {
-            List<Dictionary<ISource<bool>, bool>> buffer = GetRelevantInput(true);
-
-            if (buffer.Count > 1 && buffer[buffer.Count - 1].Values.Any(boolie => boolie) && !buffer[buffer.Count - 2].Values.Any(boolie => boolie))
+            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
             {
-                return true;
+                if (source.Value.Count > 1 && source.Value[source.Value.Count - 1] && !source.Value[source.Value.Count - 2])
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -71,11 +84,27 @@ namespace InputController
          */
         public bool VisualJustUp()
         {
-            List<Dictionary<ISource<bool>, bool>> buffer = GetRelevantInput(true);
-
-            if (buffer.Count > 1 && !buffer[buffer.Count - 1].Values.Any(boolie => boolie) && buffer[buffer.Count - 2].Values.Any(boolie => boolie))
+            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
             {
-                return true;
+                if (source.Value.Count > 1 && !source.Value[source.Value.Count - 1] && source.Value[source.Value.Count - 2])
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /*
+         * Returns true if any relevant keys are down this frame.
+         */
+        public bool VisualIsDown()
+        {
+            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
+            {
+                if (source.Value.Count > 0 && source.Value.Last())
+                {
+                    return true;
+                }
             }
             return false;
         }
