@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ControlsEarlyUpdate : Singleton
+public class ControlsEarlyUpdate : Singleton<ControlsEarlyUpdate>
 {
     ControlsUpdate m_controls;
 

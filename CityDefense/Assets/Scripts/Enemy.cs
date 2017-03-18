@@ -19,12 +19,12 @@ public class Enemy : PooledObject
         body.isKinematic = true;
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         m_health.OnDie -= OnDie;
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         m_health.ResetHealth();
     }
@@ -37,17 +37,20 @@ public class Enemy : PooledObject
 
     protected virtual void OnDestroyed() {}
 
-    private void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Targets"))
         {
-            other.gameObject.GetComponent<Health>().ApplyDamage(m_damage);
+            other.gameObject.GetComponentInParent<Health>().ApplyDamage(m_damage);
             OnDie();
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Projectiles"))
         {
             Projectile projectile = other.gameObject.GetComponent<Projectile>();
-            m_health.ApplyDamage(projectile.GetDamage());
+            if (m_health.ApplyDamage(projectile.GetDamage()))
+            {
+                projectile.Owner.IncreaseScore(m_score);
+            }
             projectile.Deactivate();
         }
     }

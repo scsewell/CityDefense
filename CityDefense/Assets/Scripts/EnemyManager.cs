@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-public class EnemyManager : MonoBehaviour
+public class EnemyManager : Singleton<EnemyManager>
 {
     [SerializeField] private Rocket m_rocketPrefab;
     [SerializeField] private float m_rocketStartWait = 5.0f;
     [SerializeField] private float m_rocketRate = 8.0f;
     [SerializeField] private float m_rocketCooldown = 4.0f;
-    [Range(0, 0.1f)]
+    [Range(0, 0.01f)]
     [SerializeField] private float m_rocketExponent = 0.001f;
     [Range(0, 10)]
     [SerializeField] private float m_rocketSpawnWidth = 6.0f;
@@ -33,9 +33,10 @@ public class EnemyManager : MonoBehaviour
 
     private bool DoSpawn(float startWait, float lastTime, float cooldown, float rate, float intensity)
     {
-        float exp = Mathf.Exp(Mathf.Max(intensity, 0) * m_roundTime);
-        return  m_roundTime > startWait &&
-                (m_roundTime - lastTime > cooldown / exp) &&
-                Random.value < (rate * exp / 60.0f) * Time.deltaTime;
+        float time = m_roundTime - startWait;
+        float exp = Mathf.Exp(Mathf.Max(intensity, 0) * time);
+        return time > 0 &&
+                m_roundTime - lastTime > cooldown / exp &&
+                Random.value < (rate / 60.0f) * exp * Time.deltaTime;
     }
 }

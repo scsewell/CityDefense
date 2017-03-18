@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PoolManager : Singleton
+public class PoolManager : Singleton<PoolManager>
 {
     [SerializeField]
     private PooledObject[] m_bullet1Prefabs;

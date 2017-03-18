@@ -28,12 +28,18 @@ public class Rocket : Enemy
         m_interpolator = GetComponent<TransformInterpolator>();
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         m_interpolator.ForgetPreviousValues();
         m_rotation = getTargetRot() + Random.Range(-m_startAngleVariance, m_startAngleVariance);
         m_rollSpeed = Random.Range(-m_maxRoll, m_maxRoll);
         m_mesh.localEulerAngles = new Vector3(m_mesh.localEulerAngles.x, Random.Range(0f, 360f), m_mesh.localEulerAngles.z);
+    }
+
+    protected override void OnDestroyed()
+    {
+        PoolManager.GetExplosion1(m_explosionPos.position, Quaternion.identity);
     }
 
     private void Update()
@@ -64,10 +70,5 @@ public class Rocket : Enemy
     public void SetTarget(Vector3 t)
     {
         m_targetPos = t;
-    }
-
-    protected override void OnDestroyed()
-    {
-        PoolManager.GetExplosion1(m_explosionPos.position, Quaternion.identity);
     }
 }

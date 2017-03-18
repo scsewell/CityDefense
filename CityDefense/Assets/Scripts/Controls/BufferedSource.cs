@@ -9,6 +9,8 @@ namespace InputController
      */
     public class BufferedSource<T>
     {
+        private static int MAX_BUFFER_SIZE = 20;
+
         protected List<ISource<T>> m_sources;
         private List<List<T>[]> m_buffer;
         private List<List<T>> m_relevantInput;
@@ -55,51 +57,74 @@ namespace InputController
             foreach (ISource<T> source in m_sources)
             {
                 List<T>[] fixedFrames = new List<T>[2];
-                fixedFrames[0] = new List<T>();
-                fixedFrames[1] = new List<T>();
+                fixedFrames[0] = new List<T>(MAX_BUFFER_SIZE);
+                fixedFrames[1] = new List<T>(MAX_BUFFER_SIZE);
                 m_buffer.Add(fixedFrames);
 
-                m_relevantInput.Add(new List<T>());
+                m_relevantInput.Add(new List<T>(2 * MAX_BUFFER_SIZE));
 
                 m_sourceInfos.Add(new SourceInfo(source.GetSourceType(), source.GetName()));
             }
         }
 
         /*
-         * Run at the end of every input frame to record the input state for that frame.
+         * Clears out any unprocessed input frames.
          */
-        public void RecordUpdateState()
+        public void ClearBuffers()
         {
             for (int i = 0; i < m_sources.Count; i++)
             {
-                m_buffer[i][1].Add(m_sources[i].GetValue());
+                m_buffer[i][0].Clear();
+                m_buffer[i][1].Clear();
+                m_relevantInput[i].Clear();
+            }
+        }
+
+        /*
+         * Run at the end of every input frame to record the input state for that frame.
+         */
+        public void RecordUpdateState(bool muting)
+        {
+            if (!(muting && m_canBeMuted))
+            {
+                for (int i = 0; i < m_sources.Count; i++)
+                {
+                    m_buffer[i][1].Add(m_sources[i].GetValue());
+                    if (m_buffer[i][1].Count > MAX_BUFFER_SIZE)
+                    {
+                        m_buffer[i][1].RemoveAt(0);
+                    }
+                }
             }
         }
 
         /*
          * Run at the end of every fixed update to remove old input frames from the buffer.
+         * Ensures the last fixed update with input frames is in the buffer along with an empty frame for new inputs.
          */
-        public void RecordFixedUpdateState()
+        public void RecordFixedUpdateState(bool muting)
         {
-            // Ensures the last fixed update with input frames is in the buffer along with an empty frame for new inputs
-            foreach (List<T>[] source in m_buffer)
+            if (!(muting && m_canBeMuted))
             {
-                if (source[1].Count > 0)
+                foreach (List<T>[] source in m_buffer)
                 {
-                    List<T> temp = source[0];
-                    source[0] = source[1];
-                    source[1] = temp;
-                    source[1].Clear();
+                    if (source[1].Count > 0)
+                    {
+                        List<T> temp = source[0];
+                        source[0] = source[1];
+                        source[1] = temp;
+                        source[1].Clear();
+                    }
                 }
             }
         }
 
         /*
          * Gets all inputs since the last FixedUpdate step.
+         * Allow for adding the last input frame of the previous FixedUpdate to be included, needed for detecting button state changes.
          */
         protected List<List<T>> GetRelevantInput(bool includePrevious)
         {
-            // Allow for adding the last input frame of the previous FixedUpdate to be included, needed for detecting button state changes
             for (int i = 0; i < m_sources.Count; i++)
             {
                 m_relevantInput[i].Clear();

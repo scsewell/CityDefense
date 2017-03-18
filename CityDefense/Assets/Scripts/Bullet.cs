@@ -9,7 +9,6 @@ public class Bullet : Projectile
 
     private TransformInterpolator m_interpolator;
     private TrailRenderer m_trail;
-    private Player m_player;
     private float m_creationTime;
 
     private void Awake()
@@ -18,12 +17,12 @@ public class Bullet : Projectile
         m_trail = GetComponent<TrailRenderer>();
     }
 
-    public void Init(Player owner)
+    public override void Init(Player owner)
     {
+        base.Init(owner);
         m_interpolator.ForgetPreviousValues();
         m_trail.Clear();
         m_creationTime = Time.time;
-        m_player = owner;
     }
 
     private void FixedUpdate()

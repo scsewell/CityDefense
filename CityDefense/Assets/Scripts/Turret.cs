@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Turret : MonoBehaviour
 {
@@ -36,9 +35,10 @@ public class Turret : MonoBehaviour
         m_brightness = gameObject.AddComponent<FloatInterpolator>().Initialize(brightness);
     }
 
-    private void Init(Player owner)
+    public Turret Init(Player owner)
     {
         m_owner = owner;
+        return this;
     }
 
     public void StateUpdate(Vector3 targetPos)

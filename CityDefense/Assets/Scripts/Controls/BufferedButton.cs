@@ -69,7 +69,7 @@ namespace InputController
          */
         public bool VisualIsDown()
         {
-            foreach (List<bool> source in GetRelevantInput(true))
+            foreach (List<bool> source in GetRelevantInput(false))
             {
                 if (source.Count > 0 && source.Last())
                 {
@@ -84,8 +84,9 @@ namespace InputController
          */
         public bool VisualJustDown()
         {
-            foreach (List<bool> source in GetRelevantInput(false))
+            foreach (List<bool> source in GetRelevantInput(true))
             {
+                //UnityEngine.Debug.Log(source.Count);
                 if (source.Count > 1 && source[source.Count - 1] && !source[source.Count - 2])
                 {
                     return true;

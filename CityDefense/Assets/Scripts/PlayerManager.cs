@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -7,14 +7,11 @@ public class PlayerManager : MonoBehaviour
     private Color[] m_playerColors;
     [SerializeField]
     private Turret m_turretPrefab;
-
-    private UI m_ui;
+    
     private List<Player> m_players;
 
 	private void Start()
     {
-        m_ui = GameObject.FindGameObjectWithTag("UI").GetComponent<UI>();
-
         m_players = new List<Player>();
         
         for (int i = 0; i < 1; i++)
@@ -23,7 +20,7 @@ public class PlayerManager : MonoBehaviour
             turrets.Add(Instantiate(m_turretPrefab, new Vector3(-4, 0, 0), Quaternion.identity));
             turrets.Add(Instantiate(m_turretPrefab, new Vector3(3, 0, 0), Quaternion.identity));
 
-            m_players.Add(new Player(i, m_playerColors[i], m_ui.AddCursor(), turrets));
+            m_players.Add(new Player(i, m_playerColors[i], UI.Instance.AddCrosshair(), turrets));
         }
     }
 

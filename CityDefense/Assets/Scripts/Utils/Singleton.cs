@@ -1,24 +1,32 @@
 ﻿using UnityEngine;
 
-public class Singleton : MonoBehaviour
+public class Singleton<T> : MonoBehaviour where T : Singleton<T>
 {
-    private static Singleton m_instance;
-    public static Singleton Instance
-    {
-        get { return m_instance; }
-        set { m_instance = value; }
-    }
+    private static object m_lock = new object();
+    private static bool m_destroyed = false;
 
-    private void Awake()
+    private static T m_instance;
+    public static T Instance
     {
-        if (m_instance == null)
+        get
         {
-            m_instance = this;
+            if (m_destroyed)
+            {
+                return null;
+            }
+            lock (m_lock)
+            {
+                if (m_instance == null)
+                {
+                    m_instance = (T)FindObjectOfType(typeof(T));
+                }
+                return m_instance;
+            }
         }
-        else
-        {
-            Debug.LogWarning("Singleton already already exists!");
-            Destroy(this);
-        }
+    }
+    
+    protected virtual void OnDestroy()
+    {
+        m_destroyed = true;
     }
 }

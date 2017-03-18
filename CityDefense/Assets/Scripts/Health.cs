@@ -9,6 +9,7 @@ public class Health : MonoBehaviour
         get { return m_maxHealth; }
     }
 
+    [SerializeField]
     private float m_currentHealth;
     public float CurrentHealth
     {
@@ -41,11 +42,11 @@ public class Health : MonoBehaviour
         get { return m_currentHealth / m_maxHealth; }
     }
 
-    public void ApplyDamage(float damage)
+    public bool ApplyDamage(float damage)
     {
         if (!IsAlive)
         {
-            return;
+            return false;
         }
         m_currentHealth = Mathf.Max(m_currentHealth - damage, 0);
         if (OnDamage != null)
@@ -55,7 +56,9 @@ public class Health : MonoBehaviour
         if (OnDie != null && !IsAlive)
         {
             OnDie();
+            return true;
         }
+        return false;
     }
 
     public void Heal(float healthGained)

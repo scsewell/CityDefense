@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class InterpolationController : Singleton
+public class InterpolationController : Singleton<InterpolationController>
 {
     private static List<IInterpComponent> m_components;
     

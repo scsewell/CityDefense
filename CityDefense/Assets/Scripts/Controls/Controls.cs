@@ -66,11 +66,11 @@ public class Controls
     {
         foreach (BufferedButton button in m_buttons)
         {
-            button.RecordFixedUpdateState();
+            button.RecordFixedUpdateState(m_isMuted);
         }
         foreach (BufferedAxis axis in m_axes)
         {
-            axis.RecordFixedUpdateState();
+            axis.RecordFixedUpdateState(m_isMuted);
         }
     }
 
@@ -81,11 +81,11 @@ public class Controls
     {
         foreach (BufferedButton button in m_buttons)
         {
-            button.RecordUpdateState();
+            button.RecordUpdateState(m_isMuted);
         }
         foreach (BufferedAxis axis in m_axes)
         {
-            axis.RecordUpdateState();
+            axis.RecordUpdateState(m_isMuted);
         };
     }
 
@@ -171,6 +171,7 @@ public class Controls
         }));
         m_buttons.Add(new BufferedButton(true, new List<ISource<bool>>
         {
+            new KeyButton(KeyCode.Mouse0),
             new KeyButton(KeyCode.Space),
             new JoystickButton(GamepadButton.RTrigger),
         }));
