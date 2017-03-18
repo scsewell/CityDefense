@@ -15,11 +15,11 @@ namespace InputController
          */
         public bool IsDown()
         {
-            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
+            foreach (List<bool> source in GetRelevantInput(false))
             {
-                for (int i = source.Value.Count - 1; i > 0; i--)
+                for (int i = 0; i < source.Count; i++)
                 {
-                    if (source.Value[i])
+                    if (source[i])
                     {
                         return true;
                     }
@@ -33,11 +33,11 @@ namespace InputController
          */
         public bool JustDown()
         {
-            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
+            foreach (List<bool> source in GetRelevantInput(true))
             {
-                for (int i = source.Value.Count - 1; i > 0; i--)
+                for (int i = source.Count - 1; i > 0; i--)
                 {
-                    if (source.Value[i] && !source.Value[i - 1])
+                    if (source[i] && !source[i - 1])
                     {
                         return true;
                     }
@@ -51,14 +51,29 @@ namespace InputController
          */
         public bool JustUp()
         {
-            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
+            foreach (List<bool> source in GetRelevantInput(true))
             {
-                for (int i = source.Value.Count - 1; i > 0; i--)
+                for (int i = source.Count - 1; i > 0; i--)
                 {
-                    if (!source.Value[i] && source.Value[i - 1])
+                    if (!source[i] && source[i - 1])
                     {
                         return true;
                     }
+                }
+            }
+            return false;
+        }
+
+        /*
+         * Returns true if any relevant keys are down this frame.
+         */
+        public bool VisualIsDown()
+        {
+            foreach (List<bool> source in GetRelevantInput(true))
+            {
+                if (source.Count > 0 && source.Last())
+                {
+                    return true;
                 }
             }
             return false;
@@ -69,9 +84,9 @@ namespace InputController
          */
         public bool VisualJustDown()
         {
-            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
+            foreach (List<bool> source in GetRelevantInput(false))
             {
-                if (source.Value.Count > 1 && source.Value[source.Value.Count - 1] && !source.Value[source.Value.Count - 2])
+                if (source.Count > 1 && source[source.Count - 1] && !source[source.Count - 2])
                 {
                     return true;
                 }
@@ -84,24 +99,9 @@ namespace InputController
          */
         public bool VisualJustUp()
         {
-            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
+            foreach (List<bool> source in GetRelevantInput(true))
             {
-                if (source.Value.Count > 1 && !source.Value[source.Value.Count - 1] && source.Value[source.Value.Count - 2])
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /*
-         * Returns true if any relevant keys are down this frame.
-         */
-        public bool VisualIsDown()
-        {
-            foreach (KeyValuePair<ISource<bool>, List<bool>> source in GetRelevantInput(true))
-            {
-                if (source.Value.Count > 0 && source.Value.Last())
+                if (source.Count > 1 && !source[source.Count - 1] && source[source.Count - 2])
                 {
                     return true;
                 }

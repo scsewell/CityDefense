@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class TransformInterpolator : MonoBehaviour, InterpolationComponent
+public class TransformInterpolator : MonoBehaviour, IInterpComponent
 {
     [SerializeField] public bool useThresholds = false;
     [SerializeField] private float m_postionThreshold = 0.001f;
@@ -39,7 +39,10 @@ public class TransformInterpolator : MonoBehaviour, InterpolationComponent
 
     public void ForgetPreviousValues()
     {
-        m_interpolator.ForgetPreviousValues();
+        if (m_interpolator != null)
+        {
+            m_interpolator.ForgetPreviousValues();
+        }
     }
 
     public void FixedFrame()

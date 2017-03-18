@@ -3,23 +3,19 @@ using System.Collections.Generic;
 
 public class InterpolationController : Singleton
 {
-    private static List<InterpolationComponent> m_components;
+    private static List<IInterpComponent> m_components;
     
     private float m_lastFixedTime;
 
     private void Awake()
     {
-        m_components = new List<InterpolationComponent>();
+        m_components = new List<IInterpComponent>();
     }
 
     private void FixedUpdate()
     {
-        Time.fixedDeltaTime = 1.0f / 50;
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 10;
-
         m_lastFixedTime = Time.time;
-        foreach (InterpolationComponent component in m_components)
+        foreach (IInterpComponent component in m_components)
         {
             component.FixedFrame();
         }
@@ -28,13 +24,13 @@ public class InterpolationController : Singleton
     private void Update()
     {
         float factor = (Time.time - m_lastFixedTime) / Time.fixedDeltaTime;
-        foreach (InterpolationComponent component in m_components)
+        foreach (IInterpComponent component in m_components)
         {
             component.UpdateFrame(factor);
         }
     }
 
-    public static void AddComponent(InterpolationComponent component)
+    public static void AddComponent(IInterpComponent component)
     {
         if (!m_components.Contains(component))
         {
@@ -42,7 +38,7 @@ public class InterpolationController : Singleton
         }
     }
 
-    public static void RemoveComponent(InterpolationComponent component)
+    public static void RemoveComponent(IInterpComponent component)
     {
         m_components.Remove(component);
     }

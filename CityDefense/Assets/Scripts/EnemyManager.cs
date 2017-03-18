@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -27,7 +25,7 @@ public class EnemyManager : MonoBehaviour
             Vector3 target = new Vector3(Random.Range(-0.75f, 0.75f), 0, 0);
 
             Vector3 pos = new Vector3(Random.Range(-m_rocketSpawnWidth, m_rocketSpawnWidth), m_rocketSpawnHeight, 0);
-            Rocket rocket = Instantiate(m_rocketPrefab, pos, Quaternion.identity);
+            Rocket rocket = PoolManager.GetRocket(pos, Quaternion.identity);
             rocket.SetTarget(target);
             m_rocketLastTime = m_roundTime;
         }

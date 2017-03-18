@@ -269,6 +269,7 @@ namespace UnityEngine.PostProcessing
             m_RenderTextureFactory.ReleaseAll();
         }
 
+#if false
         void OnGUI()
         {
             if (Event.current.type != EventType.Repaint)
@@ -284,6 +285,7 @@ namespace UnityEngine.PostProcessing
             else if (m_UserLut.active && profile.debugViews.IsModeActive(DebugMode.UserLut))
                 m_UserLut.OnGUI();
         }
+#endif
 
         void OnDisable()
         {

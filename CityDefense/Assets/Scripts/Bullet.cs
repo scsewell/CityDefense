@@ -18,7 +18,7 @@ public class Bullet : Projectile
         m_trail = GetComponent<TrailRenderer>();
     }
 
-    protected override void OnInit(Player owner)
+    public void Init(Player owner)
     {
         m_interpolator.ForgetPreviousValues();
         m_trail.Clear();
@@ -30,7 +30,7 @@ public class Bullet : Projectile
     {
         if (Time.time - m_creationTime > m_lifespan)
         {
-            Destroy();
+            Deactivate();
         }
         transform.position += transform.forward * m_speed * Time.deltaTime;
     }

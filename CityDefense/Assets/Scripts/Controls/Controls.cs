@@ -10,14 +10,14 @@ using Newtonsoft.Json;
  */ 
 public class Controls
 {
-    private Dictionary<GameButton, BufferedButton> m_buttons = new Dictionary<GameButton, BufferedButton>();
-    public Dictionary<GameButton, BufferedButton> Buttons
+    private List<BufferedButton> m_buttons = new List<BufferedButton>();
+    public List<BufferedButton> Buttons
     {
         get { return m_buttons; }
     }
     
-    private Dictionary<GameAxis, BufferedAxis> m_axes = new Dictionary<GameAxis, BufferedAxis>();
-    public Dictionary<GameAxis, BufferedAxis> Axes
+    private List<BufferedAxis> m_axes = new List<BufferedAxis>();
+    public List<BufferedAxis> Axes
     {
         get { return m_axes; }
     }
@@ -64,13 +64,13 @@ public class Controls
      */
     public void FixedUpdate()
     {
-        foreach (KeyValuePair<GameButton, BufferedButton> button in m_buttons)
+        foreach (BufferedButton button in m_buttons)
         {
-            button.Value.RecordFixedUpdateState();
+            button.RecordFixedUpdateState();
         }
-        foreach (KeyValuePair<GameAxis, BufferedAxis> axis in m_axes)
+        foreach (BufferedAxis axis in m_axes)
         {
-            axis.Value.RecordFixedUpdateState();
+            axis.RecordFixedUpdateState();
         }
     }
 
@@ -79,14 +79,14 @@ public class Controls
      */
     public void EarlyUpdate()
     {
-        foreach (KeyValuePair<GameButton, BufferedButton> button in m_buttons)
+        foreach (BufferedButton button in m_buttons)
         {
-            button.Value.RecordUpdateState();
+            button.RecordUpdateState();
         }
-        foreach (KeyValuePair<GameAxis, BufferedAxis> axis in m_axes)
+        foreach (BufferedAxis axis in m_axes)
         {
-            axis.Value.RecordUpdateState();
-        }
+            axis.RecordUpdateState();
+        };
     }
 
     /*
@@ -162,28 +162,28 @@ public class Controls
      */
     public void LoadDefaults()
     {
-        m_buttons = new Dictionary<GameButton, BufferedButton>();
-        
-        m_buttons.Add(GameButton.Menu, new BufferedButton(false, new List<ISource<bool>>
+        m_buttons = new List<BufferedButton>();
+
+        m_buttons.Add(new BufferedButton(false, new List<ISource<bool>>
         {
             new KeyButton(KeyCode.Escape),
             new JoystickButton(GamepadButton.Start),
         }));
-        m_buttons.Add(GameButton.Fire1, new BufferedButton(true, new List<ISource<bool>>
+        m_buttons.Add(new BufferedButton(true, new List<ISource<bool>>
         {
             new KeyButton(KeyCode.Space),
             new JoystickButton(GamepadButton.RTrigger),
         }));
 
 
-        m_axes = new Dictionary<GameAxis, BufferedAxis>();
+        m_axes = new List<BufferedAxis>();
 
-        m_axes.Add(GameAxis.TrackX, new BufferedAxis(true, 1f, new List<ISource<float>>
+        m_axes.Add(new BufferedAxis(true, 1f, new List<ISource<float>>
         {
             new KeyAxis(KeyCode.A, KeyCode.D),
             new JoystickAxis(GamepadAxis.LStickX),
         }));
-        m_axes.Add(GameAxis.TrackY, new BufferedAxis(true, 1f, new List<ISource<float>>
+        m_axes.Add(new BufferedAxis(true, 1f, new List<ISource<float>>
         {
             new KeyAxis(KeyCode.S, KeyCode.W),
             new JoystickAxis(GamepadAxis.LStickY),
@@ -195,7 +195,7 @@ public class Controls
      */
     public bool IsDown(GameButton button)
     {
-        BufferedButton bufferedButton = m_buttons[button];
+        BufferedButton bufferedButton = GetButton(button);
         bool isFixed = (Time.deltaTime == Time.fixedDeltaTime);
         return !(m_isMuted && bufferedButton.CanBeMuted) && (isFixed ? bufferedButton.IsDown() : bufferedButton.VisualIsDown());
     }
@@ -205,7 +205,7 @@ public class Controls
      */
     public bool JustDown(GameButton button)
     {
-        BufferedButton bufferedButton = m_buttons[button];
+        BufferedButton bufferedButton = GetButton(button);
         bool isFixed = (Time.deltaTime == Time.fixedDeltaTime);
         return !(m_isMuted && bufferedButton.CanBeMuted) && (isFixed ? bufferedButton.JustDown() : bufferedButton.VisualJustDown());
     }
@@ -215,7 +215,7 @@ public class Controls
      */
     public bool JustUp(GameButton button)
     {
-        BufferedButton bufferedButton = m_buttons[button];
+        BufferedButton bufferedButton = GetButton(button);
         bool isFixed = (Time.deltaTime == Time.fixedDeltaTime);
         return !(m_isMuted && bufferedButton.CanBeMuted) && (isFixed ? bufferedButton.JustUp() : bufferedButton.VisualJustUp());
     }
@@ -225,7 +225,7 @@ public class Controls
      */
     public float AverageValue(GameAxis axis)
     {
-        BufferedAxis bufferedAxis = m_axes[axis];
+        BufferedAxis bufferedAxis = GetAxis(axis);
         return (m_isMuted && bufferedAxis.CanBeMuted) ? 0 : bufferedAxis.GetValue(true);
     }
 
@@ -234,11 +234,21 @@ public class Controls
      */
     public float CumulativeValue(GameAxis axis)
     {
-        BufferedAxis bufferedAxis = m_axes[axis];
+        BufferedAxis bufferedAxis = GetAxis(axis);
         return (m_isMuted && bufferedAxis.CanBeMuted) ? 0 : bufferedAxis.GetValue(false);
     }
 
-    
+    private BufferedButton GetButton(GameButton button)
+    {
+        return m_buttons[(int)button];
+    }
+
+    private BufferedAxis GetAxis(GameAxis axis)
+    {
+        return m_axes[(int)axis];
+    }
+
+
     public void AddBinding(BufferedButton button, Action onRebindComplete)
     {
         if (m_rebindState == RebindState.None)

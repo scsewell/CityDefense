@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class FloatInterpolator : MonoBehaviour, InterpolationComponent
+public class FloatInterpolator : MonoBehaviour, IInterpComponent
 {
     private Interpolator<float> m_interpolator;
     private InterpolatedFloat m_interpolated;

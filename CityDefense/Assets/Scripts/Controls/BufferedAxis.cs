@@ -22,16 +22,17 @@ namespace InputController
         public float GetValue(bool average)
         {
             float maxValue = 0;
-            foreach (KeyValuePair<ISource<float>, List<float>> source in GetRelevantInput(false))
+            List<List<float>> input = GetRelevantInput(false);
+            for (int i = 0; i < m_sources.Count; i++)
             {
                 float value = 0;
-                foreach (float axisValue in source.Value)
+                foreach (float axisValue in input[i])
                 {
-                    value += GetInputValue(source.Key, axisValue);
+                    value += GetInputValue(m_sources[i], axisValue);
                 }
-                if (average && source.Value.Count > 0)
+                if (average && input[i].Count > 0)
                 {
-                    value /= source.Value.Count;
+                    value /= input[i].Count;
                 }
                 if (Mathf.Abs(maxValue) < Mathf.Abs(value))
                 {

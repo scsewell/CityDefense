@@ -1,25 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Projectile : MonoBehaviour
+public class Projectile : PooledObject
 {
     [SerializeField]
     private int m_cost;
     [SerializeField]
     private float m_damage;
-
-    private ObjectPool m_pool;
-
-    public void Init(Player owner, ObjectPool pool)
-    {
-        m_pool = pool;
-        OnInit(owner);
-    }
-
-    protected virtual void OnInit(Player owner)
-    {
-    }
 
     public int GetCost()
     {
@@ -29,10 +15,5 @@ public class Projectile : MonoBehaviour
     public float GetDamage()
     {
         return m_damage;
-    }
-
-    public void Destroy()
-    {
-        m_pool.DestroyObject(gameObject);
     }
 }

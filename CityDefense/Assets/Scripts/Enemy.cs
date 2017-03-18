@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Health))]
-public class Enemy : MonoBehaviour
+public class Enemy : PooledObject
 {
     [SerializeField]
     private int m_score;
@@ -11,8 +9,8 @@ public class Enemy : MonoBehaviour
     private float m_damage;
 
     private Health m_health;
-    
-    protected void Awake()
+
+    protected virtual void Awake()
     {
         m_health = GetComponent<Health>();
         m_health.OnDie += OnDie;
@@ -21,24 +19,36 @@ public class Enemy : MonoBehaviour
         body.isKinematic = true;
     }
 
+    private void OnDestroy()
+    {
+        m_health.OnDie -= OnDie;
+    }
+
+    private void OnEnable()
+    {
+        m_health.ResetHealth();
+    }
+
     private void OnDie()
     {
-        Destroy(gameObject);
+        Deactivate();
+        OnDestroyed();
     }
+
+    protected virtual void OnDestroyed() {}
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Targets"))
         {
-            Health health = other.gameObject.GetComponent<Health>();
-            health.ApplyDamage(m_damage);
-            Destroy(gameObject);
+            other.gameObject.GetComponent<Health>().ApplyDamage(m_damage);
+            OnDie();
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Projectiles"))
         {
             Projectile projectile = other.gameObject.GetComponent<Projectile>();
             m_health.ApplyDamage(projectile.GetDamage());
-            projectile.Destroy();
+            projectile.Deactivate();
         }
     }
 }

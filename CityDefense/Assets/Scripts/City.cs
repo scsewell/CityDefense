@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Health))]
 public class City : MonoBehaviour
@@ -12,6 +10,7 @@ public class City : MonoBehaviour
 
     private UI m_ui;
     private Health m_health;
+    private Healthbar m_healthbar;
 
 	private void Start()
     {
@@ -19,8 +18,8 @@ public class City : MonoBehaviour
 
         m_health = GetComponent<Health>();
 
-        Healthbar healthbar = m_ui.AddHealthbar(m_healthbarPrefab);
-        healthbar.Init(m_health, m_healthbarOffset);
+        m_healthbar = m_ui.AddHealthbar(m_healthbarPrefab);
+        m_healthbar.Init(m_health, m_healthbarOffset);
     }
     
     private void FixedUpdate()

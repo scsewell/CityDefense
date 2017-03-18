@@ -3,52 +3,53 @@ using System.Collections.Generic;
 
 public class ObjectPool
 {
-    private GameObject m_prefab;
-    private Queue<GameObject> m_pool;
+    private PooledObject[] m_prefabs;
+    private Queue<PooledObject> m_pool;
     private Transform m_poolRoot;
+    private int m_lastInstance;
 
-    public ObjectPool(GameObject prefab, int startSize)
+    public ObjectPool(PooledObject[] prefabs, int startSize)
     {
-        m_prefab = prefab;
+        m_prefabs = prefabs;
+        m_poolRoot = new GameObject(prefabs[0].name + "Pool").transform;
 
-        m_poolRoot = new GameObject(prefab.name + "Pool").transform;
+        m_lastInstance = Random.Range(0, m_prefabs.Length);
 
-        m_pool = new Queue<GameObject>();
+        m_pool = new Queue<PooledObject>();
         for (int i = 0; i < startSize; i++)
         {
-            GameObject obj = GameObject.Instantiate(m_prefab);
-            obj.transform.SetParent(m_poolRoot);
-            obj.SetActive(false);
-            m_pool.Enqueue(obj);
+            Deactivate(CreateInstance());
         }
     }
     
-    public GameObject GetObject(Vector3 position, Quaternion rotation)
+    public PooledObject GetObject(Vector3 position = default(Vector3), Quaternion rotation = default(Quaternion))
     {
-        GameObject obj;
+        PooledObject obj;
         if (m_pool.Count > 0)
         {
             obj = m_pool.Dequeue();
-            obj.SetActive(true);
+            obj.transform.position = position;
+            obj.transform.rotation = rotation;
+            obj.gameObject.SetActive(true);
         }
         else
         {
-            obj = GameObject.Instantiate(m_prefab);
-            obj.transform.SetParent(m_poolRoot);
+            obj = CreateInstance(position, rotation);
         }
-        obj.transform.position = position;
-        obj.transform.rotation = rotation;
         return obj;
     }
 
-    public GameObject GetObject()
+    private PooledObject CreateInstance(Vector3 position = default(Vector3), Quaternion rotation = default(Quaternion))
     {
-        return GetObject(Vector3.zero, Quaternion.identity);
+        PooledObject obj = GameObject.Instantiate(m_prefabs[m_lastInstance], position, rotation, m_poolRoot);
+        m_lastInstance = (m_lastInstance + 1) % m_prefabs.Length;
+        obj.SetPool(this);
+        return obj;
     }
 
-    public void DestroyObject(GameObject go)
+    public void Deactivate(PooledObject go)
     {
-        go.SetActive(false);
+        go.gameObject.SetActive(false);
         m_pool.Enqueue(go);
     }
 
@@ -56,8 +57,8 @@ public class ObjectPool
     {
         while (m_pool.Count > 0)
         {
-            GameObject obj = m_pool.Dequeue();
-            GameObject.Destroy(obj);
+            PooledObject obj = m_pool.Dequeue();
+            GameObject.Destroy(obj.gameObject);
         }
     }
 }

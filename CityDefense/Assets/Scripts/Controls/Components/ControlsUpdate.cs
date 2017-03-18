@@ -5,7 +5,7 @@ public class ControlsUpdate : Singleton
 {
     private void Awake()
     {
-       Controls.Instance.Load();
+        Controls.Instance.Load();
     }
     
     private void FixedUpdate()

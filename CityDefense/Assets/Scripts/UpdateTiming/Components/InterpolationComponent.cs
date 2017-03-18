@@ -1,4 +1,4 @@
-﻿public interface InterpolationComponent
+﻿public interface IInterpComponent
 {
     void FixedFrame();
     void UpdateFrame(float fac);

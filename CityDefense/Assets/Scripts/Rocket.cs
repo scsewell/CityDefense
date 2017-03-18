@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Rocket : Enemy
 {
@@ -8,8 +6,6 @@ public class Rocket : Enemy
     private Transform m_mesh;
     [SerializeField]
     private Transform m_explosionPos;
-    [SerializeField]
-    private Transform m_explosionPrefab;
 
     [SerializeField]
     private float m_speed = 5.0f;
@@ -20,14 +16,21 @@ public class Rocket : Enemy
     [SerializeField]
     private float m_maxRoll = 5.0f;
 
+    private TransformInterpolator m_interpolator;
     private Transform m_target;
     private Vector3 m_targetPos;
     private float m_rollSpeed;
     private float m_rotation;
-    private bool m_quitting = false;
 
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
+        m_interpolator = GetComponent<TransformInterpolator>();
+    }
+
+    private void OnEnable()
+    {
+        m_interpolator.ForgetPreviousValues();
         m_rotation = getTargetRot() + Random.Range(-m_startAngleVariance, m_startAngleVariance);
         m_rollSpeed = Random.Range(-m_maxRoll, m_maxRoll);
         m_mesh.localEulerAngles = new Vector3(m_mesh.localEulerAngles.x, Random.Range(0f, 360f), m_mesh.localEulerAngles.z);
@@ -53,19 +56,6 @@ public class Rocket : Enemy
         return ((360 - (Mathf.Atan2(disp.x, disp.y) * Mathf.Rad2Deg)) % 360) - 180;
     }
 
-    private void OnApplicationQuit()
-    {
-        m_quitting = true;
-    }
-
-    private void OnDestroy()
-    {
-        if (!m_quitting)
-        {
-            Instantiate(m_explosionPrefab, m_explosionPos.position, Quaternion.identity);
-        }
-    }
-
     public void SetTarget(Transform t)
     {
         m_target = t;
@@ -74,5 +64,10 @@ public class Rocket : Enemy
     public void SetTarget(Vector3 t)
     {
         m_targetPos = t;
+    }
+
+    protected override void OnDestroyed()
+    {
+        PoolManager.GetExplosion1(m_explosionPos.position, Quaternion.identity);
     }
 }

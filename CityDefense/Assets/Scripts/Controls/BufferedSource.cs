@@ -10,8 +10,8 @@ namespace InputController
     public class BufferedSource<T>
     {
         protected List<ISource<T>> m_sources;
-        private Dictionary<ISource<T>, List<T>[]> m_buffer;
-        private Dictionary<ISource<T>, List<T>> m_relevantBuffer;
+        private List<List<T>[]> m_buffer;
+        private List<List<T>> m_relevantInput;
 
         private List<SourceInfo> m_sourceInfos;
         public List<SourceInfo> SourceInfos
@@ -36,8 +36,8 @@ namespace InputController
             {
                 m_sources = new List<ISource<T>>();
             }
-            m_buffer = new Dictionary<ISource<T>, List<T>[]>();
-            m_relevantBuffer = new Dictionary<ISource<T>, List<T>>();
+            m_buffer = new List<List<T>[]>();
+            m_relevantInput = new List<List<T>>();
             m_sourceInfos = new List<SourceInfo>();
             ResetBuffers();
         }
@@ -50,16 +50,16 @@ namespace InputController
             m_sources = m_sources.OrderBy(s => (int)s.GetSourceType()).ToList();
 
             m_buffer.Clear();
-            m_relevantBuffer.Clear();
+            m_relevantInput.Clear();
             m_sourceInfos.Clear();
             foreach (ISource<T> source in m_sources)
             {
                 List<T>[] fixedFrames = new List<T>[2];
                 fixedFrames[0] = new List<T>();
                 fixedFrames[1] = new List<T>();
-                m_buffer.Add(source, fixedFrames);
+                m_buffer.Add(fixedFrames);
 
-                m_relevantBuffer.Add(source, new List<T>());
+                m_relevantInput.Add(new List<T>());
 
                 m_sourceInfos.Add(new SourceInfo(source.GetSourceType(), source.GetName()));
             }
@@ -70,9 +70,9 @@ namespace InputController
          */
         public void RecordUpdateState()
         {
-            foreach (KeyValuePair<ISource<T>, List<T>[]> source in m_buffer)
+            for (int i = 0; i < m_sources.Count; i++)
             {
-                source.Value[1].Add(source.Key.GetValue());
+                m_buffer[i][1].Add(m_sources[i].GetValue());
             }
         }
 
@@ -81,15 +81,15 @@ namespace InputController
          */
         public void RecordFixedUpdateState()
         {
-            // ensures the last fixed update with input frames is in the buffer along with an empty frame for new inputs
-            foreach (KeyValuePair<ISource<T>, List<T>[]> source in m_buffer)
+            // Ensures the last fixed update with input frames is in the buffer along with an empty frame for new inputs
+            foreach (List<T>[] source in m_buffer)
             {
-                if (source.Value[1].Count > 0)
+                if (source[1].Count > 0)
                 {
-                    List<T> temp = source.Value[0];
-                    source.Value[0] = source.Value[1];
-                    source.Value[1] = temp;
-                    source.Value[1].Clear();
+                    List<T> temp = source[0];
+                    source[0] = source[1];
+                    source[1] = temp;
+                    source[1].Clear();
                 }
             }
         }
@@ -97,20 +97,19 @@ namespace InputController
         /*
          * Gets all inputs since the last FixedUpdate step.
          */
-        protected Dictionary<ISource<T>, List<T>> GetRelevantInput(bool includePrevious)
+        protected List<List<T>> GetRelevantInput(bool includePrevious)
         {
-            // Allow for forcing the last frame with useful input to be included, needed for detecting button state changes
-            // Otherwise, if we have not recieved any inputs since the last FixedUpdate, find the last FixedUpdate that does have inputs
-            foreach (KeyValuePair<ISource<T>, List<T>> source in m_relevantBuffer)
+            // Allow for adding the last input frame of the previous FixedUpdate to be included, needed for detecting button state changes
+            for (int i = 0; i < m_sources.Count; i++)
             {
-                source.Value.Clear();
-                if ((includePrevious && m_buffer[source.Key][0].Count > 0))
+                m_relevantInput[i].Clear();
+                if (includePrevious && m_buffer[i][0].Count > 0)
                 {
-                    source.Value.Add(m_buffer[source.Key][0].Last());
+                    m_relevantInput[i].Add(m_buffer[i][0].Last());
                 }
-                source.Value.AddRange(m_buffer[source.Key][1]);
+                m_relevantInput[i].AddRange(m_buffer[i][1]);
             }
-            return m_relevantBuffer;
+            return m_relevantInput;
         }
 
         /*
