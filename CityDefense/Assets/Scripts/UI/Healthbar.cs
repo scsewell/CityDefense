@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class Healthbar : MonoBehaviour
@@ -28,19 +27,16 @@ public class Healthbar : MonoBehaviour
     private Health m_health;
     private RectTransform m_canvas;
     private RectTransform m_rt;
-    private Vector3 m_offset;
     private float m_hurtFac = 0;
     private float m_damageTime = 0;
     
-    public void Init(Health health, Vector3 offset)
+    public void Init(Health health)
     {
         m_canvas = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         m_rt = GetComponent<RectTransform>();
 
         m_health = health;
         m_health.OnDamage += Hurt;
-
-        m_offset = offset;
     }
 
     private void OnDestroy()
@@ -60,9 +56,6 @@ public class Healthbar : MonoBehaviour
 
     private void LateUpdate()
     {
-        Vector3 viewSpace = Camera.main.WorldToViewportPoint(m_health.transform.position + m_offset);
-        m_rt.anchoredPosition = new Vector2((viewSpace.x - 0.5f) * m_canvas.sizeDelta.x, (viewSpace.y - 0.5f) * m_canvas.sizeDelta.y);
-
         float healthFraction = Mathf.Clamp01(m_health.HealthFraction);
         m_mainBar.fillAmount = healthFraction;
 
@@ -85,5 +78,11 @@ public class Healthbar : MonoBehaviour
         Color col = color;
         col.a *= Mathf.Clamp01(alpha);
         image.color = col;
+    }
+
+    public void UpdatePosition(Vector3 worldPos)
+    {
+        Vector3 viewSpace = Camera.main.WorldToViewportPoint(worldPos);
+        m_rt.anchoredPosition = new Vector2((viewSpace.x - 0.5f) * m_canvas.sizeDelta.x, (viewSpace.y - 0.5f) * m_canvas.sizeDelta.y);
     }
 }
