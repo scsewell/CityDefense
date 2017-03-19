@@ -22,7 +22,7 @@ public class City : MonoBehaviour
         m_health = GetComponent<Health>();
 
         m_healthbar = UI.Instance.AddHealthbar(m_healthbarPrefab);
-        m_healthbar.Init(m_health, m_healthbarOffset);
+        m_healthbar.Init(m_health);
     }
     
     private void FixedUpdate()
@@ -32,5 +32,10 @@ public class City : MonoBehaviour
             m_health.Heal(m_healAmount);
             m_lastHealTime = Time.time;
         }
+    }
+
+    private void LateUpdate()
+    {
+        m_healthbar.UpdatePosition(transform.position + m_healthbarOffset);
     }
 }

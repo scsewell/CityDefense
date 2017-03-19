@@ -6,14 +6,15 @@ public class Crosshair : MonoBehaviour
     [SerializeField]
     private float speed = 2.0f;
     [SerializeField]
-    private float m_edgeMargin = 20.0f;
+    private float m_edgeMargin = 0.05f;
     [SerializeField]
-    private float m_edgeMarginBottom = 100.0f;
+    private float m_minTargetHeight = 1.0f;
 
     private RectTransform m_rt;
     private RectTransform m_canvas;
     private bool m_useMouse;
     private Vector3 m_lastMoustPos;
+    private Vector2 m_crosshairPos;
 
     public void Init(Color color, bool useMouse)
     {
@@ -32,20 +33,22 @@ public class Crosshair : MonoBehaviour
         if (m_useMouse && Input.mousePosition != m_lastMoustPos)
         {
             m_lastMoustPos = Input.mousePosition;
-            Vector2 mousePos = Camera.main.ScreenToViewportPoint(m_lastMoustPos) - (Vector3.one * 0.5f);
-            targetPos = new Vector2(mousePos.x * m_canvas.sizeDelta.x, mousePos.y * m_canvas.sizeDelta.y);
+            targetPos = Camera.main.ScreenToViewportPoint(m_lastMoustPos) - (Vector3.one * 0.5f);
         }
         else
         {
             Vector2 input = Vector2.ClampMagnitude(new Vector2(Controls.Instance.AverageValue(GameAxis.TrackX), Controls.Instance.AverageValue(GameAxis.TrackY)), 1);
-            Vector2 delta = (input * input.magnitude * input.magnitude) * (speed * m_canvas.sizeDelta.y) * Time.deltaTime;
-            targetPos = m_rt.anchoredPosition + delta;
+            Vector2 delta = (input * input.magnitude * input.magnitude) * speed * Time.deltaTime;
+            targetPos = m_crosshairPos + delta;
         }
 
-        float sideMargin = (m_canvas.sizeDelta.x / 2) - m_edgeMargin;
-        float topMargin = (m_canvas.sizeDelta.y / 2) - m_edgeMargin;
-        float bottomMargin = (m_canvas.sizeDelta.y / 2) - m_edgeMarginBottom;
-        m_rt.anchoredPosition = new Vector2(Mathf.Clamp(targetPos.x, -sideMargin, sideMargin), Mathf.Clamp(targetPos.y, -bottomMargin, topMargin));
+        float sideMargin = 0.5f - (m_edgeMargin * (m_canvas.sizeDelta.y / m_canvas.sizeDelta.x));
+        float topMargin = 0.5f - m_edgeMargin;
+        float bottomMargin = Camera.main.WorldToViewportPoint(Vector3.up * m_minTargetHeight).y - 0.5f;
+        float x = Mathf.Clamp(targetPos.x, -sideMargin, sideMargin);
+        float y = Mathf.Clamp(targetPos.y, bottomMargin, topMargin);
+        m_crosshairPos = new Vector2(x, y);
+        m_rt.anchoredPosition = new Vector2(x * m_canvas.sizeDelta.x, y * m_canvas.sizeDelta.y);
     }
 
     public Vector3 GetTargetPos()
