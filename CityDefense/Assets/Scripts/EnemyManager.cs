@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class EnemyManager : Singleton<EnemyManager>
 {
@@ -13,9 +14,23 @@ public class EnemyManager : Singleton<EnemyManager>
     [Range(10, 20)]
     [SerializeField] private float m_rocketSpawnHeight = 12.0f;
     private float m_rocketLastTime;
-    
+
+    private List<Enemy> m_enemies;
     private float m_roundTime = 0;
-    
+
+    private void Awake()
+    {
+        m_enemies = new List<Enemy>();
+    }
+
+    private void Update()
+    {
+        foreach (Enemy enemy in m_enemies)
+        {
+            enemy.EnemyUpdate();
+        }
+    }
+
     private void FixedUpdate()
     {
         m_roundTime += Time.deltaTime;
@@ -29,7 +44,12 @@ public class EnemyManager : Singleton<EnemyManager>
             rocket.SetTarget(target);
             m_rocketLastTime = m_roundTime;
         }
-	}
+
+        foreach (Enemy enemy in m_enemies)
+        {
+            enemy.EnemyFixedUpdate();
+        }
+    }
 
     private bool DoSpawn(float startWait, float lastTime, float cooldown, float rate, float intensity)
     {
@@ -38,5 +58,18 @@ public class EnemyManager : Singleton<EnemyManager>
         return time > 0 &&
                 m_roundTime - lastTime > cooldown / exp &&
                 Random.value < (rate / 60.0f) * exp * Time.deltaTime;
+    }
+
+    public void AddEnemy(Enemy enemy)
+    {
+        if (!m_enemies.Contains(enemy))
+        {
+            m_enemies.Add(enemy);
+        }
+    }
+
+    public void RemoveEnemy(Enemy enemy)
+    {
+        m_enemies.Remove(enemy);
     }
 }

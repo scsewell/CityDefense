@@ -239,12 +239,12 @@ public class Controls
         return (m_isMuted && bufferedAxis.CanBeMuted) ? 0 : bufferedAxis.GetValue(false);
     }
 
-    private BufferedButton GetButton(GameButton button)
+    public BufferedButton GetButton(GameButton button)
     {
         return m_buttons[(int)button];
     }
 
-    private BufferedAxis GetAxis(GameAxis axis)
+    public BufferedAxis GetAxis(GameAxis axis)
     {
         return m_axes[(int)axis];
     }

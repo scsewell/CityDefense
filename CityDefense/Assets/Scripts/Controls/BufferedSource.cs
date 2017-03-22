@@ -16,10 +16,6 @@ namespace InputController
         private List<List<T>> m_relevantInput;
 
         private List<SourceInfo> m_sourceInfos;
-        public List<SourceInfo> SourceInfos
-        {
-            get { return m_sourceInfos; }
-        }
 
         protected bool m_canBeMuted;
         public bool CanBeMuted
@@ -135,6 +131,11 @@ namespace InputController
                 m_relevantInput[i].AddRange(m_buffer[i][1]);
             }
             return m_relevantInput;
+        }
+
+        public List<SourceInfo> GetSourceInfo()
+        {
+            return m_sourceInfos;
         }
 
         /*

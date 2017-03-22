@@ -45,8 +45,9 @@ public class Player
         }
     }
 
-    public void IncreaseScore(int score)
+    public void EnemyDestoryed(Enemy enemy)
     {
-        m_score += score;
+        m_score += enemy.Score;
+        PlayerManager.Instance.AddMoney(enemy.Score);
     }
 }

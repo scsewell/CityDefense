@@ -33,18 +33,20 @@ public class Crosshair : MonoBehaviour
         if (m_useMouse && Input.mousePosition != m_lastMoustPos)
         {
             m_lastMoustPos = Input.mousePosition;
-            targetPos = Camera.main.ScreenToViewportPoint(m_lastMoustPos) - (Vector3.one * 0.5f);
+            Vector3 viewPos = Camera.main.ScreenToViewportPoint(m_lastMoustPos);
+            viewPos.y = viewPos.y * (1 - Camera.main.rect.y) + Camera.main.rect.y;
+            targetPos = viewPos - (Vector3.one * 0.5f);
         }
         else
         {
             Vector2 input = Vector2.ClampMagnitude(new Vector2(Controls.Instance.AverageValue(GameAxis.TrackX), Controls.Instance.AverageValue(GameAxis.TrackY)), 1);
-            Vector2 delta = (input * input.magnitude * input.magnitude) * speed * Time.deltaTime;
+            Vector2 delta = (input* speed * Time.deltaTime);
             targetPos = m_crosshairPos + delta;
         }
 
         float sideMargin = 0.5f - (m_edgeMargin * (m_canvas.sizeDelta.y / m_canvas.sizeDelta.x));
         float topMargin = 0.5f - m_edgeMargin;
-        float bottomMargin = Camera.main.WorldToViewportPoint(Vector3.up * m_minTargetHeight).y - 0.5f;
+        float bottomMargin = (Camera.main.WorldToViewportPoint(Vector3.up * m_minTargetHeight).y * (1 - Camera.main.rect.y) + Camera.main.rect.y) - 0.5f;
         float x = Mathf.Clamp(targetPos.x, -sideMargin, sideMargin);
         float y = Mathf.Clamp(targetPos.y, bottomMargin, topMargin);
         m_crosshairPos = new Vector2(x, y);
@@ -58,6 +60,7 @@ public class Crosshair : MonoBehaviour
             (m_rt.anchoredPosition.y / m_canvas.sizeDelta.y) + 0.5f,
             0);
 
+        crosshairPos.y = (crosshairPos.y - Camera.main.rect.y) / (1 - Camera.main.rect.y);
         Ray ray = Camera.main.ViewportPointToRay(crosshairPos);
         float distance = Vector3.Dot(-ray.origin, Vector3.back) / Vector3.Dot(ray.direction, Vector3.back);
         return distance * ray.direction + ray.origin;

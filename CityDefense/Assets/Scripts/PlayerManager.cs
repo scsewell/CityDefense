@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : Singleton<PlayerManager>
 {
     [SerializeField]
     private Color[] m_playerColors;
@@ -9,6 +9,7 @@ public class PlayerManager : MonoBehaviour
     private Turret m_turretPrefab;
     
     private List<Player> m_players;
+    private int m_money;
 
 	private void Start()
     {
@@ -20,7 +21,7 @@ public class PlayerManager : MonoBehaviour
             turrets.Add(Instantiate(m_turretPrefab, new Vector3(-4, 0, 0), Quaternion.identity));
             turrets.Add(Instantiate(m_turretPrefab, new Vector3(3, 0, 0), Quaternion.identity));
 
-            m_players.Add(new Player(i, m_playerColors[i], UI.Instance.AddCrosshair(), turrets));
+            m_players.Add(new Player(i, m_playerColors[i], GameUI.Instance.AddCrosshair(), turrets));
         }
     }
 
@@ -30,5 +31,16 @@ public class PlayerManager : MonoBehaviour
         {
             player.Update();
         }
+    }
+
+    public int GetMoney()
+    {
+        return m_money;
+    }
+
+    public void AddMoney(int money)
+    {
+        m_money += Mathf.Max(money, 0);
+        GameUI.Instance.UpdateMoney(m_money);
     }
 }

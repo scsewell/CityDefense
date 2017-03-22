@@ -12,7 +12,7 @@ public class City : MonoBehaviour
     [SerializeField]
     private Vector3 m_healthbarOffset;
 
-    private UI m_ui;
+    private GameUI m_ui;
     private Health m_health;
     private Healthbar m_healthbar;
     private float m_lastHealTime;
@@ -21,7 +21,7 @@ public class City : MonoBehaviour
     {
         m_health = GetComponent<Health>();
 
-        m_healthbar = UI.Instance.AddHealthbar(m_healthbarPrefab);
+        m_healthbar = GameUI.Instance.AddHealthbar(m_healthbarPrefab);
         m_healthbar.Init(m_health);
     }
     

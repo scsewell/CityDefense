@@ -83,6 +83,7 @@ public class Healthbar : MonoBehaviour
     public void UpdatePosition(Vector3 worldPos)
     {
         Vector3 viewSpace = Camera.main.WorldToViewportPoint(worldPos);
+        viewSpace.y = viewSpace.y * (1 - Camera.main.rect.y) + Camera.main.rect.y;
         m_rt.anchoredPosition = new Vector2((viewSpace.x - 0.5f) * m_canvas.sizeDelta.x, (viewSpace.y - 0.5f) * m_canvas.sizeDelta.y);
     }
 }

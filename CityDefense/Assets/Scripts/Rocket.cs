@@ -42,12 +42,12 @@ public class Rocket : Enemy
         PoolManager.GetExplosion1(m_explosionPos.position, Quaternion.identity);
     }
 
-    private void Update()
+    protected override void OnUpdate()
     {
         m_mesh.localEulerAngles = m_mesh.localEulerAngles + Vector3.up * m_rollSpeed * Time.deltaTime;
     }
 
-    private void FixedUpdate()
+    protected override void OnFixedUpdate()
     {
         m_rotation = Mathf.Lerp(m_rotation, getTargetRot(), Time.deltaTime * m_turnSpeed);
 

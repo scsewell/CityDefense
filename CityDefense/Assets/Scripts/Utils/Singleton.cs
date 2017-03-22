@@ -25,7 +25,7 @@ public class Singleton<T> : MonoBehaviour where T : Singleton<T>
         }
     }
     
-    protected virtual void OnDestroy()
+    protected virtual void OnApplicationQuit()
     {
         m_destroyed = true;
     }

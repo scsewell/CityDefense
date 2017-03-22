@@ -19,5 +19,10 @@
             m_type = type;
             m_name = name;
         }
+
+        public bool IsEqual(SourceInfo sourceInfo)
+        {
+            return m_type == sourceInfo.Type && m_name == sourceInfo.Name;
+        }
     }
 }
