@@ -9,21 +9,26 @@ public class PanelSlider : MonoBehaviour, ISettingPanel
     public Slider slider;
     
     private bool m_intOnly;
+    private Func<float> m_get;
     private Action<float> m_set;
 
     public RectTransform Init(string name, Func<float> get, Action<float> set, float min, float max, bool intOnly)
     {
+        m_get = get;
         m_set = set;
-        m_intOnly = intOnly;
-
         label.text = name;
         slider.minValue = min;
         slider.maxValue = max;
-        slider.wholeNumbers = m_intOnly;
-        slider.value = get();
-        UpdateText();
+        m_intOnly = intOnly;
+        slider.wholeNumbers = intOnly;
 
         return GetComponent<RectTransform>();
+    }
+
+    public void Load()
+    {
+        slider.value = m_get();
+        UpdateText();
     }
 
     public void Apply()

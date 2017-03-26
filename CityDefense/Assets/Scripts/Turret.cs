@@ -19,8 +19,7 @@ public class Turret : MonoBehaviour
     private int m_smokeParticles = 10;
     [SerializeField]
     private float m_recoilAmount = 0.065f;
-
-    private Player m_owner;
+    
     private Light m_light;
     private ParticleSystem m_smoke;
     private Interpolator<float> m_brightness;
@@ -35,9 +34,8 @@ public class Turret : MonoBehaviour
         m_brightness = gameObject.AddComponent<FloatInterpolator>().Initialize(brightness);
     }
 
-    public Turret Init(Player owner)
+    public Turret Init()
     {
-        m_owner = owner;
         return this;
     }
 
@@ -57,7 +55,7 @@ public class Turret : MonoBehaviour
         {
             Vector3 pos = Vector3.ProjectOnPlane(m_barrelEnd.position, Vector3.forward);
             Vector3 disp = targetPos - pos;
-            PoolManager.GetBullet1(pos, Quaternion.LookRotation(disp, Vector3.up)).Init(m_owner);
+            PoolManager.GetBullet1(pos, Quaternion.LookRotation(disp, Vector3.up)).Init();
 
             m_smoke.Emit(m_smokeParticles);
 

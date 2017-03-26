@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using InputController;
 
-public class PanelControlBinding : MonoBehaviour, ISettingPanel
+public class PanelControlBinding : MonoBehaviour
 {
     private Button m_button;
     private Text[] m_bindingText;
@@ -46,9 +46,7 @@ public class PanelControlBinding : MonoBehaviour, ISettingPanel
         Load();
         return GetComponent<RectTransform>();
     }
-
-    public void Apply() {}
-
+    
     public void Load()
     {
         foreach (SourceType sourceType in Enum.GetValues(typeof(SourceType)))
@@ -58,7 +56,7 @@ public class PanelControlBinding : MonoBehaviour, ISettingPanel
             foreach (SourceInfo info in sourceInfo)
             {
                 str += info.Name;
-                if (info.IsEqual(sourceInfo.Last()))
+                if (!info.IsEqual(sourceInfo.Last()))
                 {
                     str += ", ";
                 }

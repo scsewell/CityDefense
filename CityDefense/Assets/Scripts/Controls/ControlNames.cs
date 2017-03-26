@@ -21,8 +21,8 @@ namespace InputController
         {
             switch (axis)
             {
-                case GameAxis.TrackX:       return "Cursor Horizontal";
-                case GameAxis.TrackY:       return "Cursor Vertical";
+                case GameAxis.TrackX:       return "Crosshair Horizontal";
+                case GameAxis.TrackY:       return "Crosshair Vertical";
             }
             return axis.ToString();
         }

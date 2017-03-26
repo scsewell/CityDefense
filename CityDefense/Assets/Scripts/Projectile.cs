@@ -6,16 +6,9 @@ public class Projectile : PooledObject
     private int m_cost;
     [SerializeField]
     private float m_damage;
-
-    private Player m_owner;
-    public Player Owner
+    
+    public virtual void Init()
     {
-        get { return m_owner; }
-    }
-
-    public virtual void Init(Player owner)
-    {
-        m_owner = owner;
     }
 
     public int GetCost()

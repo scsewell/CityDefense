@@ -75,7 +75,7 @@ public class Enemy : PooledObject
             Projectile projectile = other.gameObject.GetComponent<Projectile>();
             if (m_health.ApplyDamage(projectile.GetDamage()))
             {
-                projectile.Owner.EnemyDestoryed(this);
+                PlayerManager.Instance.EnemyDestroyed(this);
             }
             projectile.Deactivate();
         }

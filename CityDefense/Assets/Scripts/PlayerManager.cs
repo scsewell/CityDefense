@@ -4,43 +4,55 @@ using System.Collections.Generic;
 public class PlayerManager : Singleton<PlayerManager>
 {
     [SerializeField]
-    private Color[] m_playerColors;
+    private Color m_color;
     [SerializeField]
     private Turret m_turretPrefab;
     
-    private List<Player> m_players;
-    private int m_money;
-
-	private void Start()
+    private int m_money = 0;
+    public int Money
     {
-        m_players = new List<Player>();
-        
-        for (int i = 0; i < 1; i++)
-        {
-            List<Turret> turrets = new List<Turret>();
-            turrets.Add(Instantiate(m_turretPrefab, new Vector3(-4, 0, 0), Quaternion.identity));
-            turrets.Add(Instantiate(m_turretPrefab, new Vector3(3, 0, 0), Quaternion.identity));
+        get { return m_money; }
+    }
 
-            m_players.Add(new Player(i, m_playerColors[i], GameUI.Instance.AddCrosshair(), turrets));
-        }
+    private int m_score = 0;
+    public int Score
+    {
+        get { return m_score; }
+    }
+    
+    private Crosshair m_cursor;
+    private List<Turret> m_turrets;
+
+    private void Start()
+    {
+        m_turrets = new List<Turret>();
+        m_turrets.Add(Instantiate(m_turretPrefab, new Vector3(-4, 0, 0), Quaternion.identity));
+        m_turrets.Add(Instantiate(m_turretPrefab, new Vector3(3, 0, 0), Quaternion.identity));
+
+        m_cursor = GameUI.Instance.AddCrosshair();
+        m_cursor.Init(m_color);
     }
 
     private void FixedUpdate()
     {
-        foreach (Player player in m_players)
+        m_cursor.Move();
+
+        bool fire = Controls.Instance.IsDown(GameButton.Fire1);
+        foreach (Turret t in m_turrets)
         {
-            player.Update();
+            Vector3 targetPos = m_cursor.GetTargetPos();
+            t.StateUpdate(targetPos);
+            if (fire)
+            {
+                t.FireBullet(targetPos);
+            }
         }
     }
 
-    public int GetMoney()
+    public void EnemyDestroyed(Enemy enemy)
     {
-        return m_money;
-    }
-
-    public void AddMoney(int money)
-    {
-        m_money += Mathf.Max(money, 0);
+        m_score += enemy.Score;
+        m_money += enemy.Score;
         GameUI.Instance.UpdateMoney(m_money);
     }
 }

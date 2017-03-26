@@ -1,15 +1,12 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class Settings
 {
     // limits on values
-    public const float MIN_BRIGHTNESS = 0f;
-    public const float MAX_BRIGHTNESS = 2f;
     public static int[] TARGET_FRAME_RATES = { 10, 30, 60, 120, 144, 500 };
-    public enum ShadowQualityLevels { OFF, LOW, MEDIUM, HIGH, ULTRA };
+    public enum ShadowQualityLevels { OFF, LOW, HIGH };
 
     // default values
     private const bool DEF_FULLSCREEN = true;
@@ -17,10 +14,8 @@ public class Settings
     private const bool DEF_AA = true;
     private const bool DEF_BLOOM = true;
     private const bool DEF_MOTION_BLUR = true;
-    private const bool DEF_SSAO = true;
     private const bool DEF_SHOW_FPS = false;
     private const int DEF_FRAMERATE = 60;
-    private const float DEF_BRIGHTNESS = 1;
     private const float DEF_VOLUME = 1;
     private const ShadowQualityLevels DEF_SHADOW_QUALITY = ShadowQualityLevels.HIGH;
 
@@ -84,26 +79,6 @@ public class Settings
     public void SetMotionBlur(bool value)
     {
         m_motionBlur = value;
-    }
-
-    private bool m_SSAO;
-    public bool GetSSAO()
-    {
-        return m_SSAO;
-    }
-    public void SetSSAO(bool value)
-    {
-        m_SSAO = value;
-    }
-
-    private float m_brightness;
-    public float GetBrightness()
-    {
-        return m_brightness;
-    }
-    public void SetBrightness(float value)
-    {
-        m_brightness = value;
     }
 
     private float m_volume;
@@ -179,14 +154,29 @@ public class Settings
 	public void Apply()
     {
         Application.targetFrameRate = m_frameRate;
+        QualitySettings.vSyncCount = (m_vsync ? 1 : 0);
 
         if (m_resolution.width != Screen.currentResolution.width || m_resolution.height != Screen.currentResolution.height || m_fullscreen != Screen.fullScreen)
         {
             Screen.SetResolution(m_resolution.width, m_resolution.height, m_fullscreen, m_frameRate);
         }
 
-        QualitySettings.SetQualityLevel((int)m_shadowQuality);
-        QualitySettings.vSyncCount = (m_vsync ? 1 : 0);
+        switch (m_shadowQuality)
+        {
+            case ShadowQualityLevels.OFF:
+                QualitySettings.shadows = ShadowQuality.Disable;
+                break;
+            case ShadowQualityLevels.LOW:
+                QualitySettings.shadows = ShadowQuality.All;
+                QualitySettings.shadowCascades = 2;
+                QualitySettings.shadowResolution = ShadowResolution.Medium;
+                break;
+            case ShadowQualityLevels.HIGH:
+                QualitySettings.shadows = ShadowQuality.All;
+                QualitySettings.shadowCascades = 4;
+                QualitySettings.shadowResolution = ShadowResolution.High;
+                break;
+        }
 
         AudioListener.volume = m_volume;
     }
@@ -199,9 +189,7 @@ public class Settings
         m_vsync             = DEF_VSYNC;
         m_bloom             = DEF_BLOOM;
         m_motionBlur        = DEF_MOTION_BLUR;
-        m_SSAO              = DEF_SSAO;
         m_frameRate         = DEF_FRAMERATE;
-        m_brightness        = DEF_BRIGHTNESS;
         m_volume            = DEF_VOLUME;
         m_shadowQuality     = DEF_SHADOW_QUALITY;
 
@@ -210,11 +198,11 @@ public class Settings
 
     public void Save()
     {
-        FileIO.WriteSettings(m_instance);
+        FileIO.WriteSettings(this);
     }
 	
-	public void Load()
+	public static Settings Load()
     {
-        m_instance = FileIO.ReadSettings();
+        return FileIO.ReadSettings();
     }
 }

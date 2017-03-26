@@ -10,13 +10,13 @@ using Newtonsoft.Json;
  */ 
 public class Controls
 {
-    private List<BufferedButton> m_buttons = new List<BufferedButton>();
+    private List<BufferedButton> m_buttons;
     public List<BufferedButton> Buttons
     {
         get { return m_buttons; }
     }
-    
-    private List<BufferedAxis> m_axes = new List<BufferedAxis>();
+
+    private List<BufferedAxis> m_axes;
     public List<BufferedAxis> Axes
     {
         get { return m_axes; }
@@ -56,6 +56,8 @@ public class Controls
 
     public Controls()
     {
+        m_buttons = new List<BufferedButton>();
+        m_axes = new List<BufferedAxis>();
         LoadDefaults();
     }
 
@@ -162,33 +164,59 @@ public class Controls
      */
     public void LoadDefaults()
     {
-        m_buttons = new List<BufferedButton>();
+        Dictionary<GameButton, BufferedButton> buttons = new Dictionary<GameButton, BufferedButton>();
 
-        m_buttons.Add(new BufferedButton(false, new List<ISource<bool>>
+        buttons.Add(GameButton.Menu, new BufferedButton(false, new List<ISource<bool>>
         {
             new KeyButton(KeyCode.Escape),
             new JoystickButton(GamepadButton.Start),
         }));
-        m_buttons.Add(new BufferedButton(true, new List<ISource<bool>>
+        buttons.Add(GameButton.Fire1, new BufferedButton(true, new List<ISource<bool>>
         {
             new KeyButton(KeyCode.Mouse0),
             new KeyButton(KeyCode.Space),
             new JoystickButton(GamepadButton.RTrigger),
         }));
+        
+        Dictionary<GameAxis, BufferedAxis> axes = new Dictionary<GameAxis, BufferedAxis>();
 
-
-        m_axes = new List<BufferedAxis>();
-
-        m_axes.Add(new BufferedAxis(true, 1f, new List<ISource<float>>
+        axes.Add(GameAxis.TrackX, new BufferedAxis(true, 1.0f, new List<ISource<float>>
         {
             new KeyAxis(KeyCode.A, KeyCode.D),
             new JoystickAxis(GamepadAxis.LStickX),
         }));
-        m_axes.Add(new BufferedAxis(true, 1f, new List<ISource<float>>
+        axes.Add(GameAxis.TrackY, new BufferedAxis(true, 1.0f, new List<ISource<float>>
         {
             new KeyAxis(KeyCode.S, KeyCode.W),
             new JoystickAxis(GamepadAxis.LStickY),
         }));
+
+
+        m_buttons.Clear();
+        foreach (GameButton button in Enum.GetValues(typeof(GameButton)))
+        {
+            if (buttons.ContainsKey(button))
+            {
+                m_buttons.Add(buttons[button]);
+            }
+            else
+            {
+                m_buttons.Add(new BufferedButton(true, new List<ISource<bool>>()));
+            }
+        }
+
+        m_axes.Clear();
+        foreach (GameAxis axis in Enum.GetValues(typeof(GameAxis)))
+        {
+            if (axes.ContainsKey(axis))
+            {
+                m_axes.Add(axes[axis]);
+            }
+            else
+            {
+                m_axes.Add(new BufferedAxis(true, 1.0f, new List<ISource<float>>()));
+            }
+        }
     }
 
     /*
@@ -326,11 +354,11 @@ public class Controls
 
     public void Save()
     {
-        FileIO.WriteControls(Instance);
+        FileIO.WriteControls(this);
     }
 
-    public void Load()
+    public static Controls Load()
     {
-        m_instance = FileIO.ReadControls();
+        return FileIO.ReadControls();
     }
 }

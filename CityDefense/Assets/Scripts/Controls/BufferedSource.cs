@@ -26,7 +26,7 @@ namespace InputController
         protected BufferedSource(bool canBeMuted, List<ISource<T>> sources)
         {
             m_canBeMuted = canBeMuted;
-            if (sources != null)
+            if (sources != null && sources.Count > 0)
             {
                 m_sources = new List<ISource<T>>(sources);
             }

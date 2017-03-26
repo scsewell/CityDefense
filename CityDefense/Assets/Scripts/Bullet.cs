@@ -17,9 +17,9 @@ public class Bullet : Projectile
         m_trail = GetComponent<TrailRenderer>();
     }
 
-    public override void Init(Player owner)
+    public override void Init()
     {
-        base.Init(owner);
+        base.Init();
         m_interpolator.ForgetPreviousValues();
         m_trail.Clear();
         m_creationTime = Time.time;
