@@ -61,7 +61,7 @@ public class GameUI : Singleton<GameUI>
     public void UpdateTime(float time)
     {
         int minutes = (int)(time / 60);
-        int seconds = (int)(time - minutes);
+        int seconds = (int)(time - (minutes * 60));
 
         if (seconds != m_lastSeconds)
         {

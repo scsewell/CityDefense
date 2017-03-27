@@ -17,7 +17,7 @@ public class Rocket : Enemy
     private float m_maxRoll = 5.0f;
 
     private TransformInterpolator m_interpolator;
-    private Transform m_target;
+    private Target m_target;
     private Vector3 m_targetPos;
     private float m_rollSpeed;
     private float m_rotation;
@@ -53,18 +53,34 @@ public class Rocket : Enemy
 
         transform.rotation = Quaternion.AngleAxis(m_rotation, Vector3.forward);
         transform.position += -transform.up * m_speed * Time.deltaTime;
+
+        if (m_target != null && m_target.Health.IsAlive)
+        {
+            m_targetPos = m_target.transform.position;
+        }
     }
 
     private float getTargetRot()
     {
-        Vector3 targetPos = m_target != null ? m_target.position : m_targetPos;
+        Vector3 targetPos;
+        if (m_target != null && m_target.Health.IsAlive)
+        {
+            Vector3 velocity = (m_target.transform.position - m_targetPos) / Time.deltaTime;
+            targetPos = Utils.FindIntercept(transform.position, m_speed, m_target.transform.position, velocity);
+        }
+        else
+        {
+            m_target = null;
+            targetPos = m_targetPos;
+        }
         Vector3 disp = targetPos - transform.position;
         return ((360 - (Mathf.Atan2(disp.x, disp.y) * Mathf.Rad2Deg)) % 360) - 180;
     }
 
-    public void SetTarget(Transform t)
+    public void SetTarget(Target t)
     {
         m_target = t;
+        m_targetPos = m_target.transform.position;
     }
 
     public void SetTarget(Vector3 t)

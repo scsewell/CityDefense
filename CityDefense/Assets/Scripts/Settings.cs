@@ -155,6 +155,7 @@ public class Settings
     {
         Application.targetFrameRate = m_frameRate;
         QualitySettings.vSyncCount = (m_vsync ? 1 : 0);
+        QualitySettings.antiAliasing = (m_antialiasing ? 4 : 0);
 
         if (m_resolution.width != Screen.currentResolution.width || m_resolution.height != Screen.currentResolution.height || m_fullscreen != Screen.fullScreen)
         {

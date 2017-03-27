@@ -13,19 +13,24 @@ public class Target : PooledObject
     private Vector3 m_healthbarOffset;
     
     protected Health m_health;
+    public Health Health
+    {
+        get { return m_health; }
+    }
+
     protected Healthbar m_healthbar;
     private float m_lastHealTime;
 
     private void Awake()
     {
         m_health = GetComponent<Health>();
-        m_healthbar = GameUI.Instance.AddHealthbar(m_healthbarPrefab);
-        m_healthbar.SetSource(m_health);
         OnAwake();
     }
 
     private void Start()
     {
+        m_healthbar = GameUI.Instance.AddHealthbar(m_healthbarPrefab);
+        m_healthbar.SetSource(m_health);
         OnStart();
     }
     
@@ -47,7 +52,7 @@ public class Target : PooledObject
 
     public virtual Vector3 GetTargetPos()
     {
-        return transform.position;
+        return Vector3.zero;
     }
 
     protected virtual void OnAwake() { }

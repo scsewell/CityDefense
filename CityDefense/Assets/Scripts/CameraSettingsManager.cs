@@ -12,7 +12,7 @@ public class CameraSettingsManager : MonoBehaviour
 
     private void Update()
     {
-        m_postProfile.antialiasing.enabled = Settings.Instance.GetAntialiasing();
+        m_postProfile.antialiasing.enabled = !Settings.Instance.GetAntialiasing();
         m_postProfile.motionBlur.enabled = Settings.Instance.GetMotionBlur();
         m_postProfile.bloom.enabled = Settings.Instance.GetBloom();
     }

@@ -8,7 +8,7 @@ public class Truck : Target
     private float m_acceleration = 0.125f;
 
     private TransformInterpolator m_interpolator;
-    private float m_speed = 0f;
+    private float m_speed;
 
     protected override void OnAwake()
     {
@@ -27,13 +27,24 @@ public class Truck : Target
 
     private void OnEnable()
     {
-        m_health.ResetHealth();
-        m_healthbar.Init();
         m_interpolator.ForgetPreviousValues();
+        m_health.ResetHealth();
+        if (m_healthbar != null)
+        {
+            m_healthbar.gameObject.SetActive(true);
+            m_healthbar.Init();
+        }
+        m_speed = 0f;
+        EnemyManager.Instance.AddTarget(this);
     }
 
     private void OnDisable()
     {
+        if (m_healthbar != null)
+        {
+            m_healthbar.gameObject.SetActive(false);
+        }
+        EnemyManager.Instance.RemoveTarget(this);
     }
 
     private void OnDie()
