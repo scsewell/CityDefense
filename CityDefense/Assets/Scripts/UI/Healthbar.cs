@@ -29,14 +29,24 @@ public class Healthbar : MonoBehaviour
     private RectTransform m_rt;
     private float m_hurtFac = 0;
     private float m_damageTime = 0;
-    
-    public void Init(Health health)
+
+    private void Awake()
     {
         m_canvas = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         m_rt = GetComponent<RectTransform>();
+    }
 
+    public void SetSource(Health health)
+    {
         m_health = health;
         m_health.OnDamage += Hurt;
+        Init();
+    }
+
+    public void Init()
+    {
+        m_hurtFac = 0;
+        m_damageTime = 0;
     }
 
     private void OnDestroy()

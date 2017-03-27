@@ -180,8 +180,7 @@ public class GameMenu : Singleton<GameMenu>
 
         bool fromRoot = m_activeMenu == Menu.Root;
         m_activeMenu = menu;
-
-        Time.timeScale = (menu != Menu.None) ? 0 : 1;
+        
         panel_overlay.enabled = (menu != Menu.None);
 
         if (fromRoot)

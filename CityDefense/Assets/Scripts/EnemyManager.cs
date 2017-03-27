@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 public class EnemyManager : Singleton<EnemyManager>
 {
-    [SerializeField] private Target m_city;
-
-    [SerializeField] private Target m_factory;
     [Range(0, 1)]
     [SerializeField] private float m_factoryTargetChance = 0.1f;
     
@@ -21,7 +18,6 @@ public class EnemyManager : Singleton<EnemyManager>
     private float m_rocketLastTime;
 
     private List<Enemy> m_enemies;
-    private float m_roundTime = 0;
 
     private void Awake()
     {
@@ -34,19 +30,16 @@ public class EnemyManager : Singleton<EnemyManager>
         {
             enemy.EnemyUpdate();
         }
-        GameUI.Instance.UpdateTime(m_roundTime);
     }
 
     private void FixedUpdate()
     {
-        m_roundTime += Time.deltaTime;
-    
         if (DoSpawn(m_rocketStartWait, m_rocketLastTime, m_rocketCooldown, m_rocketRate, m_rocketExponent))
         {
             Vector3 pos = new Vector3(Random.Range(-m_rocketSpawnWidth, m_rocketSpawnWidth), m_rocketSpawnHeight, 0);
             Rocket rocket = PoolManager.GetRocket(pos, Quaternion.identity);
             rocket.SetTarget(PickTarget().GetTargetPos());
-            m_rocketLastTime = m_roundTime;
+            m_rocketLastTime = GameManager.Instance.RoundTime;
         }
 
         foreach (Enemy enemy in m_enemies)
@@ -57,10 +50,10 @@ public class EnemyManager : Singleton<EnemyManager>
 
     private bool DoSpawn(float startWait, float lastTime, float cooldown, float rate, float intensity)
     {
-        float time = m_roundTime - startWait;
+        float time = GameManager.Instance.RoundTime - startWait;
         float exp = Mathf.Exp(Mathf.Max(intensity, 0) * time);
         return time > 0 &&
-                m_roundTime - lastTime > cooldown / exp &&
+                GameManager.Instance.RoundTime - lastTime > cooldown / exp &&
                 Random.value < (rate / 60.0f) * exp * Time.deltaTime;
     }
 
@@ -68,9 +61,9 @@ public class EnemyManager : Singleton<EnemyManager>
     {
         if (Random.value < m_factoryTargetChance)
         {
-            return m_factory;
+            return GameManager.Instance.Factory;
         }
-        return m_city;
+        return GameManager.Instance.City;
     }
 
     public void AddEnemy(Enemy enemy)

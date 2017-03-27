@@ -17,7 +17,7 @@ public class Enemy : PooledObject
         get { return m_damage; }
     }
 
-    private Health m_health;
+    protected Health m_health;
 
     protected virtual void Awake()
     {

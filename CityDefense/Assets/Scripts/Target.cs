@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Health))]
-public class Target : MonoBehaviour
+public class Target : PooledObject
 {
     [SerializeField]
     private float m_healAmount = 25;
@@ -11,19 +11,21 @@ public class Target : MonoBehaviour
     private Healthbar m_healthbarPrefab;
     [SerializeField]
     private Vector3 m_healthbarOffset;
-
-    private GameUI m_ui;
-    private Health m_health;
-    private Healthbar m_healthbar;
+    
+    protected Health m_health;
+    protected Healthbar m_healthbar;
     private float m_lastHealTime;
+
+    private void Awake()
+    {
+        m_health = GetComponent<Health>();
+        m_healthbar = GameUI.Instance.AddHealthbar(m_healthbarPrefab);
+        m_healthbar.SetSource(m_health);
+        OnAwake();
+    }
 
     private void Start()
     {
-        m_health = GetComponent<Health>();
-
-        m_healthbar = GameUI.Instance.AddHealthbar(m_healthbarPrefab);
-        m_healthbar.Init(m_health);
-
         OnStart();
     }
     
@@ -48,6 +50,7 @@ public class Target : MonoBehaviour
         return transform.position;
     }
 
+    protected virtual void OnAwake() { }
     protected virtual void OnStart() { }
     protected virtual void OnFixedUpdate() { }
     protected virtual void OnLateUpdate() { }

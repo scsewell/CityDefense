@@ -40,6 +40,14 @@ public class GameUI : Singleton<GameUI>
         m_ammoBullet1Builder = new StringBuilder("Bullets: ", 16);
     }
 
+    private void Update()
+    {
+        if (GameManager.Instance.RoundOver)
+        {
+            m_crosshairs.gameObject.SetActive(false);
+        }
+    }
+
     public Crosshair AddCrosshair()
     {
         return Instantiate(m_crosshairPrefab, m_crosshairs, false);

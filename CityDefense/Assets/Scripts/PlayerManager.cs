@@ -20,7 +20,7 @@ public class PlayerManager : Singleton<PlayerManager>
         get { return m_score; }
     }
 
-    private int m_ammoBullet1 = 50;
+    private int m_ammoBullet1 = 100;
     public int AmmoBullet1
     {
         get { return m_ammoBullet1; }
@@ -32,11 +32,15 @@ public class PlayerManager : Singleton<PlayerManager>
     private void Start()
     {
         m_turrets = new List<Turret>();
-        m_turrets.Add(Instantiate(m_turretPrefab, new Vector3(-4, 0, 0), Quaternion.identity));
-        m_turrets.Add(Instantiate(m_turretPrefab, new Vector3(3, 0, 0), Quaternion.identity));
+        m_turrets.Add(Instantiate(m_turretPrefab, new Vector3(-4, 0, 0.2f), Quaternion.identity));
+        m_turrets.Add(Instantiate(m_turretPrefab, new Vector3(3, 0, 0.2f), Quaternion.identity));
 
         m_cursor = GameUI.Instance.AddCrosshair();
         m_cursor.Init(m_color);
+
+        GameUI.Instance.UpdateScore(m_score);
+        GameUI.Instance.UpdateMoney(m_money);
+        GameUI.Instance.UpdateAmmoBullet1(m_ammoBullet1);
     }
 
     private void FixedUpdate()
@@ -54,6 +58,12 @@ public class PlayerManager : Singleton<PlayerManager>
                 t.FireBullet(targetPos);
             }
         }
+    }
+
+    public void Bullet1AmmoArrived()
+    {
+        m_ammoBullet1 += 100;
+        GameUI.Instance.UpdateAmmoBullet1(m_ammoBullet1);
     }
 
     public void Bullet1Fired()
