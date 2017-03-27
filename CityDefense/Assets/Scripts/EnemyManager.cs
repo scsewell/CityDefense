@@ -3,7 +3,12 @@ using System.Collections.Generic;
 
 public class EnemyManager : Singleton<EnemyManager>
 {
-    [SerializeField] private Rocket m_rocketPrefab;
+    [SerializeField] private Target m_city;
+
+    [SerializeField] private Target m_factory;
+    [Range(0, 1)]
+    [SerializeField] private float m_factoryTargetChance = 0.1f;
+    
     [SerializeField] private float m_rocketStartWait = 5.0f;
     [SerializeField] private float m_rocketRate = 8.0f;
     [SerializeField] private float m_rocketCooldown = 4.0f;
@@ -29,6 +34,7 @@ public class EnemyManager : Singleton<EnemyManager>
         {
             enemy.EnemyUpdate();
         }
+        GameUI.Instance.UpdateTime(m_roundTime);
     }
 
     private void FixedUpdate()
@@ -37,11 +43,9 @@ public class EnemyManager : Singleton<EnemyManager>
     
         if (DoSpawn(m_rocketStartWait, m_rocketLastTime, m_rocketCooldown, m_rocketRate, m_rocketExponent))
         {
-            Vector3 target = new Vector3(Random.Range(-0.75f, 0.75f), 0, 0);
-
             Vector3 pos = new Vector3(Random.Range(-m_rocketSpawnWidth, m_rocketSpawnWidth), m_rocketSpawnHeight, 0);
             Rocket rocket = PoolManager.GetRocket(pos, Quaternion.identity);
-            rocket.SetTarget(target);
+            rocket.SetTarget(PickTarget().GetTargetPos());
             m_rocketLastTime = m_roundTime;
         }
 
@@ -58,6 +62,15 @@ public class EnemyManager : Singleton<EnemyManager>
         return time > 0 &&
                 m_roundTime - lastTime > cooldown / exp &&
                 Random.value < (rate / 60.0f) * exp * Time.deltaTime;
+    }
+
+    private Target PickTarget()
+    {
+        if (Random.value < m_factoryTargetChance)
+        {
+            return m_factory;
+        }
+        return m_city;
     }
 
     public void AddEnemy(Enemy enemy)

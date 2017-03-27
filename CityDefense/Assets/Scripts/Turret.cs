@@ -64,6 +64,8 @@ public class Turret : MonoBehaviour
 
             m_barrelMesh.transform.position = m_barrel.position - m_barrel.up * m_recoilAmount;
 
+            PlayerManager.Instance.Bullet1Fired();
+
             m_lastFireTime = Time.time;
         }
     }

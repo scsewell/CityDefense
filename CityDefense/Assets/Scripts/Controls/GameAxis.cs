@@ -3,6 +3,4 @@
  */
 public enum GameAxis
 {
-    TrackX,
-    TrackY,
 }

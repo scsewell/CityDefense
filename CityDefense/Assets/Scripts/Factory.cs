@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class City : Target
+public class Factory : Target
 {
     [SerializeField]
     private float m_targetWidth = 1.25f;

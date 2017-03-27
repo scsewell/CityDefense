@@ -68,16 +68,23 @@ public class Enemy : PooledObject
         if (other.gameObject.layer == LayerMask.NameToLayer("Targets"))
         {
             other.gameObject.GetComponentInParent<Health>().ApplyDamage(m_damage);
-            OnDie();
+            m_health.ApplyDamage(m_health.MaxHealth);
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Projectiles"))
         {
-            Projectile projectile = other.gameObject.GetComponent<Projectile>();
-            if (m_health.ApplyDamage(projectile.GetDamage()))
+            if (CameraVisibility.Instance.IsVisible(other))
             {
-                PlayerManager.Instance.EnemyDestroyed(this);
+                Projectile projectile = other.gameObject.GetComponent<Projectile>();
+                if (m_health.ApplyDamage(projectile.GetDamage()))
+                {
+                    PlayerManager.Instance.EnemyDestroyed(this);
+                }
+                projectile.Deactivate();
             }
-            projectile.Deactivate();
+        }
+        else
+        {
+            m_health.ApplyDamage(m_health.MaxHealth);
         }
     }
 }

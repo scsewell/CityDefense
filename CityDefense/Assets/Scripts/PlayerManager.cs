@@ -19,7 +19,13 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         get { return m_score; }
     }
-    
+
+    private int m_ammoBullet1 = 50;
+    public int AmmoBullet1
+    {
+        get { return m_ammoBullet1; }
+    }
+
     private Crosshair m_cursor;
     private List<Turret> m_turrets;
 
@@ -37,22 +43,30 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         m_cursor.Move();
 
-        bool fire = Controls.Instance.IsDown(GameButton.Fire1);
+        bool fire1 = Controls.Instance.IsDown(GameButton.Fire1);
+
         foreach (Turret t in m_turrets)
         {
             Vector3 targetPos = m_cursor.GetTargetPos();
             t.StateUpdate(targetPos);
-            if (fire)
+            if (fire1 && m_ammoBullet1 > 0)
             {
                 t.FireBullet(targetPos);
             }
         }
     }
 
+    public void Bullet1Fired()
+    {
+        m_ammoBullet1--;
+        GameUI.Instance.UpdateAmmoBullet1(m_ammoBullet1);
+    }
+
     public void EnemyDestroyed(Enemy enemy)
     {
         m_score += enemy.Score;
         m_money += enemy.Score;
+        GameUI.Instance.UpdateScore(m_score);
         GameUI.Instance.UpdateMoney(m_money);
     }
 }

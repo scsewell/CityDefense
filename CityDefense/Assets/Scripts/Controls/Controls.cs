@@ -169,27 +169,13 @@ public class Controls
         buttons.Add(GameButton.Menu, new BufferedButton(false, new List<ISource<bool>>
         {
             new KeyButton(KeyCode.Escape),
-            new JoystickButton(GamepadButton.Start),
         }));
         buttons.Add(GameButton.Fire1, new BufferedButton(true, new List<ISource<bool>>
         {
             new KeyButton(KeyCode.Mouse0),
-            new KeyButton(KeyCode.Space),
-            new JoystickButton(GamepadButton.RTrigger),
         }));
         
         Dictionary<GameAxis, BufferedAxis> axes = new Dictionary<GameAxis, BufferedAxis>();
-
-        axes.Add(GameAxis.TrackX, new BufferedAxis(true, 1.0f, new List<ISource<float>>
-        {
-            new KeyAxis(KeyCode.A, KeyCode.D),
-            new JoystickAxis(GamepadAxis.LStickX),
-        }));
-        axes.Add(GameAxis.TrackY, new BufferedAxis(true, 1.0f, new List<ISource<float>>
-        {
-            new KeyAxis(KeyCode.S, KeyCode.W),
-            new JoystickAxis(GamepadAxis.LStickY),
-        }));
 
 
         m_buttons.Clear();
